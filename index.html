@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Paris · 埃菲尔铁塔微缩模型</title>
+  <title>Paris · 巴黎街景微缩模型</title>
   <link rel="icon" href="data:," />
   <style>
     :root {
@@ -182,11 +182,11 @@
   </style>
 </head>
 <body>
-  <div id="canvas-container" aria-label="埃菲尔铁塔 3D 微缩模型画布"></div>
+  <div id="canvas-container" aria-label="巴黎街景 3D 微缩模型画布"></div>
 
   <header class="header-overlay">
     <h1 class="main-title">Paris</h1>
-    <p class="sub-title">埃菲尔铁塔 · 桌面微缩模型</p>
+    <p class="sub-title">巴黎街景 · 桌面微缩模型</p>
   </header>
 
   <div class="controls-wrap">
@@ -244,10 +244,10 @@
       var scene = new THREE.Scene();
       var fogDayColor = new THREE.Color(0xc98b78);
       var fogNightColor = new THREE.Color(0x0a1328);
-      var fog = new THREE.FogExp2(fogDayColor.getHex(), 0.0115);
+      var fog = new THREE.FogExp2(fogDayColor.getHex(), 0.0082);
       scene.fog = fog;
 
-      var camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.2, 240);
+      var camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.2, 260);
 
       // -----------------------------------------------------------------------
       // Sky Dome (Warm Dusk <-> Deep Night)
@@ -292,7 +292,7 @@
           '}'
         ].join('\n')
       });
-      var skyDome = new THREE.Mesh(new THREE.SphereGeometry(120, 32, 24), skyMat);
+      var skyDome = new THREE.Mesh(new THREE.SphereGeometry(135, 32, 24), skyMat);
       scene.add(skyDome);
 
       // -----------------------------------------------------------------------
@@ -302,44 +302,94 @@
       var hemiDayGnd = new THREE.Color(0x5e4a3d);
       var hemiNightSky = new THREE.Color(0x5b7ec2);
       var hemiNightGnd = new THREE.Color(0x131926);
-      var hemiLight = new THREE.HemisphereLight(hemiDaySky.clone(), hemiDayGnd.clone(), 0.85);
+      var hemiLight = new THREE.HemisphereLight(hemiDaySky.clone(), hemiDayGnd.clone(), 0.88);
       scene.add(hemiLight);
 
       var sunDayColor = new THREE.Color(0xffc98b);
       var sunNightColor = new THREE.Color(0x8db2ff);
       var dirLight = new THREE.DirectionalLight(sunDayColor.clone(), 1.85);
-      dirLight.position.set(17, 22, 13);
+      dirLight.position.set(22, 29, 19);
       dirLight.castShadow = true;
-      dirLight.shadow.mapSize.set(1024, 1024);
+      dirLight.shadow.mapSize.set(2048, 2048);
       dirLight.shadow.camera.near = 2;
-      dirLight.shadow.camera.far = 55;
-      dirLight.shadow.camera.left = -13;
-      dirLight.shadow.camera.right = 13;
-      dirLight.shadow.camera.top = 18;
-      dirLight.shadow.camera.bottom = -12;
-      dirLight.shadow.bias = -0.0005;
+      dirLight.shadow.camera.far = 80;
+      dirLight.shadow.camera.left = -24;
+      dirLight.shadow.camera.right = 24;
+      dirLight.shadow.camera.top = 26;
+      dirLight.shadow.camera.bottom = -22;
+      dirLight.shadow.bias = -0.00045;
       scene.add(dirLight);
 
       var rimLight = new THREE.DirectionalLight(0xffb478, 0.55);
-      rimLight.position.set(-16, 10, -14);
+      rimLight.position.set(-20, 12, -18);
       scene.add(rimLight);
+
+      var TOWER_Z = -9.8;
 
       // Tower nighttime warm interior lights (tucked under platforms & upper lattice)
       var towerGlowLow = new THREE.PointLight(0xffb340, 0, 8.5, 1.8);
-      towerGlowLow.position.set(0, 3.15, 0);
+      towerGlowLow.position.set(0, 3.15, TOWER_Z);
       scene.add(towerGlowLow);
 
       var towerGlowMid = new THREE.PointLight(0xffbe52, 0, 7.5, 1.8);
-      towerGlowMid.position.set(0, 6.65, 0);
+      towerGlowMid.position.set(0, 6.65, TOWER_Z);
       scene.add(towerGlowMid);
 
       var towerGlowHigh = new THREE.PointLight(0xffcb66, 0, 7.5, 1.8);
-      towerGlowHigh.position.set(0, 10.8, 0);
+      towerGlowHigh.position.set(0, 10.8, TOWER_Z);
       scene.add(towerGlowHigh);
 
       var towerGlowSummit = new THREE.PointLight(0xffd478, 0, 5.5, 1.8);
-      towerGlowSummit.position.set(0, 13.8, 0);
+      towerGlowSummit.position.set(0, 13.8, TOWER_Z);
       scene.add(towerGlowSummit);
+
+      // Subtle warm intersection street lights at night
+      var streetGlowCross = new THREE.PointLight(0xffb95c, 0, 13.5, 1.8);
+      streetGlowCross.position.set(0, 2.2, 9.2);
+      scene.add(streetGlowCross);
+
+      var streetGlowQuay = new THREE.PointLight(0xffb95c, 0, 11.5, 1.8);
+      streetGlowQuay.position.set(0, 2.0, 2.6);
+      scene.add(streetGlowQuay);
+
+      // -----------------------------------------------------------------------
+      // Procedural Textures (Zero External Assets)
+      // -----------------------------------------------------------------------
+      function createGlowTexture() {
+        var c = document.createElement('canvas');
+        c.width = 64;
+        c.height = 64;
+        var ctx = c.getContext('2d');
+        var grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+        grad.addColorStop(0, 'rgba(255, 245, 210, 1)');
+        grad.addColorStop(0.35, 'rgba(255, 215, 130, 0.65)');
+        grad.addColorStop(1, 'rgba(255, 200, 100, 0)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 64, 64);
+        return new THREE.CanvasTexture(c);
+      }
+
+      function createStripedAwningTexture(colA, colB) {
+        var c = document.createElement('canvas');
+        c.width = 128;
+        c.height = 32;
+        var ctx = c.getContext('2d');
+        var stripes = 8;
+        var w = c.width / stripes;
+        for (var i = 0; i < stripes; i++) {
+          ctx.fillStyle = (i % 2 === 0) ? colA : colB;
+          ctx.fillRect(i * w, 0, w, c.height);
+        }
+        var tex = new THREE.CanvasTexture(c);
+        tex.encoding = THREE.sRGBEncoding;
+        tex.wrapS = THREE.RepeatWrapping;
+        tex.wrapT = THREE.ClampToEdgeWrapping;
+        return tex;
+      }
+
+      var glowTex = createGlowTexture();
+      var redAwningTex = createStripedAwningTexture('#b8322b', '#f6efe4');
+      var greenAwningTex = createStripedAwningTexture('#24593e', '#f6efe4');
 
       // -----------------------------------------------------------------------
       // Root Diorama Group
@@ -347,144 +397,386 @@
       var diorama = new THREE.Group();
       scene.add(diorama);
 
+      var BASE_W = 28.0; // X: [-14, +14]
+      var BASE_D = 36.8; // Z: [-18.4, +18.4] (~4:3 proportion)
+      var dummy = new THREE.Object3D();
+      var tmpColor = new THREE.Color();
+
       // -----------------------------------------------------------------------
-      // 1. Miniature Diorama Base & Plaza
+      // 1. Rectangular Chamfered Wood Base & Brass Inlay Frame
       // -----------------------------------------------------------------------
       var woodMat = new THREE.MeshStandardMaterial({
         color: 0x2c1e16,
-        roughness: 0.52,
+        roughness: 0.5,
         metalness: 0.08
       });
-      var baseWood = new THREE.Mesh(new THREE.CylinderGeometry(10.2, 10.55, 0.72, 72), woodMat);
-      baseWood.position.y = -0.37;
-      baseWood.receiveShadow = true;
-      diorama.add(baseWood);
-
-      var rimWood = new THREE.Mesh(new THREE.TorusGeometry(10.06, 0.19, 16, 72), woodMat);
-      rimWood.rotation.x = Math.PI / 2;
-      rimWood.position.y = 0.03;
-      rimWood.receiveShadow = true;
-      rimWood.castShadow = true;
-      diorama.add(rimWood);
-
+      var woodBevelMat = new THREE.MeshStandardMaterial({
+        color: 0x3b281d,
+        roughness: 0.46,
+        metalness: 0.08
+      });
       var brassMat = new THREE.MeshStandardMaterial({
         color: 0xc29b57,
-        roughness: 0.32,
-        metalness: 0.82
+        roughness: 0.3,
+        metalness: 0.84
       });
-      var brassRing = new THREE.Mesh(new THREE.TorusGeometry(9.88, 0.045, 10, 72), brassMat);
-      brassRing.rotation.x = Math.PI / 2;
-      brassRing.position.y = 0.07;
-      diorama.add(brassRing);
 
+      var plinthBot = new THREE.Mesh(new THREE.BoxGeometry(BASE_W + 1.35, 0.40, BASE_D + 1.35), woodMat);
+      plinthBot.position.y = -0.68;
+      plinthBot.receiveShadow = true;
+      diorama.add(plinthBot);
+
+      var plinthMid = new THREE.Mesh(new THREE.BoxGeometry(BASE_W + 0.88, 0.36, BASE_D + 0.88), woodBevelMat);
+      plinthMid.position.y = -0.34;
+      plinthMid.receiveShadow = true;
+      plinthMid.castShadow = true;
+      diorama.add(plinthMid);
+
+      function addRectFrame(halfW, halfD, barThick, barH, yPos, mat) {
+        var topBottomGeo = new THREE.BoxGeometry(halfW * 2 + barThick, barH, barThick);
+        var leftRightGeo = new THREE.BoxGeometry(barThick, barH, halfD * 2 - barThick);
+        var bN = new THREE.Mesh(topBottomGeo, mat);
+        bN.position.set(0, yPos, -halfD);
+        var bS = new THREE.Mesh(topBottomGeo, mat);
+        bS.position.set(0, yPos, halfD);
+        var bW = new THREE.Mesh(leftRightGeo, mat);
+        bW.position.set(-halfW, yPos, 0);
+        var bE = new THREE.Mesh(leftRightGeo, mat);
+        bE.position.set(halfW, yPos, 0);
+        [bN, bS, bW, bE].forEach(function (m) {
+          m.receiveShadow = true;
+          m.castShadow = true;
+          diorama.add(m);
+        });
+      }
+
+      // Outer wooden rim & inner brass inlay frame
+      addRectFrame(BASE_W * 0.5 + 0.19, BASE_D * 0.5 + 0.19, 0.38, 0.22, 0.02, woodBevelMat);
+      addRectFrame(BASE_W * 0.5 - 0.01, BASE_D * 0.5 - 0.01, 0.075, 0.06, 0.095, brassMat);
+
+      // -----------------------------------------------------------------------
+      // 2. Terrain Slabs, Champ de Mars Plaza, Seine River & Arched Bridge
+      // -----------------------------------------------------------------------
       var plazaMat = new THREE.MeshStandardMaterial({
-        color: 0xdfd3c0,
+        color: 0xddd1be,
         roughness: 0.88,
         metalness: 0.02
       });
-      var plazaDisc = new THREE.Mesh(new THREE.CylinderGeometry(9.86, 9.86, 0.14, 72), plazaMat);
-      plazaDisc.position.y = -0.07;
-      plazaDisc.receiveShadow = true;
-      diorama.add(plazaDisc);
-
-      // Central cross walkways & circular ring
-      var walkwayMat = new THREE.MeshStandardMaterial({
-        color: 0xeae0d0,
+      var sidewalkMat = new THREE.MeshStandardMaterial({
+        color: 0xe7ded0,
         roughness: 0.85,
         metalness: 0.02
       });
-      var walkX = new THREE.Mesh(new THREE.BoxGeometry(17.6, 0.02, 2.2), walkwayMat);
-      walkX.position.y = 0.006;
-      walkX.receiveShadow = true;
-      diorama.add(walkX);
-
-      var walkZ = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.02, 15.2), walkwayMat);
-      walkZ.position.set(0, 0.006, -0.8);
-      walkZ.receiveShadow = true;
-      diorama.add(walkZ);
-
-      // Grass quadrants (Champ de Mars feel)
+      var asphaltMat = new THREE.MeshStandardMaterial({
+        color: 0x343842,
+        roughness: 0.88,
+        metalness: 0.04
+      });
       var grassMat = new THREE.MeshStandardMaterial({
-        color: 0x5c7347,
+        color: 0x577043,
         roughness: 0.92,
         metalness: 0.0
       });
-      var lawnPositions = [
-        [-3.4, -3.4],
-        [3.4, -3.4],
-        [-3.4, 2.7],
-        [3.4, 2.7]
+
+      // North terrain (Champ de Mars + Tower: z = -18.4 .. -2.75)
+      var northGround = new THREE.Mesh(new THREE.BoxGeometry(BASE_W - 0.04, 0.18, 15.65), plazaMat);
+      northGround.position.set(0, -0.09, -10.575);
+      northGround.receiveShadow = true;
+      diorama.add(northGround);
+
+      // South terrain (Parisian Quarter: z = +0.95 .. +18.4)
+      var southGround = new THREE.Mesh(new THREE.BoxGeometry(BASE_W - 0.04, 0.18, 17.45), plazaMat);
+      southGround.position.set(0, -0.09, 9.675);
+      southGround.receiveShadow = true;
+      diorama.add(southGround);
+
+      // Champ de Mars green lawns flanking the Tower Plaza
+      var lawnSpecs = [
+        { x: -7.1, z: -6.2, w: 7.4, d: 3.9 },
+        { x: 7.1, z: -6.2, w: 7.4, d: 3.9 },
+        { x: -7.1, z: -14.1, w: 7.4, d: 4.4 },
+        { x: 7.1, z: -14.1, w: 7.4, d: 4.4 },
+        { x: -8.6, z: -9.9, w: 4.4, d: 2.2 },
+        { x: 8.6, z: -9.9, w: 4.4, d: 2.2 }
       ];
-      lawnPositions.forEach(function (pos) {
-        var lawn = new THREE.Mesh(new THREE.BoxGeometry(3.5, 0.025, 2.6), grassMat);
-        lawn.position.set(pos[0], 0.01, pos[1]);
+      lawnSpecs.forEach(function (lw) {
+        var lawn = new THREE.Mesh(new THREE.BoxGeometry(lw.w, 0.03, lw.d), grassMat);
+        lawn.position.set(lw.x, 0.012, lw.z);
         lawn.receiveShadow = true;
         diorama.add(lawn);
       });
 
-      // -----------------------------------------------------------------------
-      // 2. Optional Seine River Ribbon & Miniature Arch Bridge
-      // -----------------------------------------------------------------------
+      // Tower square esplanade & paved turnaround apron north of the bridge
+      var esplanade = new THREE.Mesh(new THREE.BoxGeometry(7.6, 0.022, 8.2), sidewalkMat);
+      esplanade.position.set(0, 0.011, -9.8);
+      esplanade.receiveShadow = true;
+      diorama.add(esplanade);
+
+      var turnaroundApron = new THREE.Mesh(new THREE.CylinderGeometry(2.35, 2.35, 0.025, 32), asphaltMat);
+      turnaroundApron.position.set(0, 0.012, -4.5);
+      turnaroundApron.receiveShadow = true;
+      diorama.add(turnaroundApron);
+
+      var turnaroundIsland = new THREE.Mesh(new THREE.CylinderGeometry(0.82, 0.82, 0.06, 24), grassMat);
+      turnaroundIsland.position.set(0, 0.03, -4.5);
+      turnaroundIsland.receiveShadow = true;
+      diorama.add(turnaroundIsland);
+
+      // Seine River Channel (z = -2.75 .. +0.95, center = -0.90)
+      var riverBedMat = new THREE.MeshStandardMaterial({ color: 0x162938, roughness: 0.9 });
+      var riverBed = new THREE.Mesh(new THREE.BoxGeometry(BASE_W - 0.04, 0.06, 3.8), riverBedMat);
+      riverBed.position.set(0, -0.15, -0.90);
+      diorama.add(riverBed);
+
+      var riverDayColor = new THREE.Color(0x3a7ca5);
+      var riverNightColor = new THREE.Color(0x163858);
       var riverMat = new THREE.MeshStandardMaterial({
-        color: 0x2f5e80,
-        roughness: 0.18,
-        metalness: 0.3,
-        emissive: new THREE.Color(0x0b1c30),
-        emissiveIntensity: 0.25
+        color: riverDayColor.clone(),
+        roughness: 0.24,
+        metalness: 0.10,
+        emissive: new THREE.Color(0x133858),
+        emissiveIntensity: 0.38
       });
-      var riverRing = new THREE.Mesh(
-        new THREE.RingGeometry(6.2, 7.65, 48, 1, -Math.PI * 0.86, Math.PI * 0.72),
-        riverMat
-      );
-      riverRing.rotation.x = -Math.PI / 2;
-      riverRing.position.y = 0.015;
-      riverRing.receiveShadow = true;
-      diorama.add(riverRing);
+      var riverWater = new THREE.Mesh(new THREE.BoxGeometry(BASE_W - 0.06, 0.04, 3.68), riverMat);
+      riverWater.position.set(0, -0.07, -0.90);
+      riverWater.receiveShadow = true;
+      diorama.add(riverWater);
 
-      // Stone embankments along river edges
-      var bankMat = new THREE.MeshStandardMaterial({ color: 0xcabca6, roughness: 0.85 });
-      [6.15, 7.7].forEach(function (r) {
-        var bank = new THREE.Mesh(
-          new THREE.RingGeometry(r - 0.08, r + 0.08, 48, 1, -Math.PI * 0.86, Math.PI * 0.72),
-          bankMat
-        );
-        bank.rotation.x = -Math.PI / 2;
-        bank.position.y = 0.022;
-        bank.receiveShadow = true;
-        diorama.add(bank);
+      // Stone Quay Embankments
+      var quayMat = new THREE.MeshStandardMaterial({ color: 0xc8bba4, roughness: 0.84 });
+      [-2.78, 0.98].forEach(function (qz) {
+        var wall = new THREE.Mesh(new THREE.BoxGeometry(BASE_W - 0.04, 0.26, 0.24), quayMat);
+        wall.position.set(0, -0.05, qz);
+        wall.receiveShadow = true;
+        wall.castShadow = true;
+        diorama.add(wall);
+
+        var cap = new THREE.Mesh(new THREE.BoxGeometry(BASE_W - 0.04, 0.05, 0.34), sidewalkMat);
+        cap.position.set(0, 0.09, qz);
+        cap.receiveShadow = true;
+        diorama.add(cap);
       });
 
-      // Small arched bridge crossing the river at z ≈ +6.92, x = 0
+      // Bridge elevation helpers (bridge spans z = -3.0 .. +1.2, crown at z = -0.9)
+      function bridgeHeightAt(z) {
+        if (z <= -3.0 || z >= 1.2) return 0.015;
+        var u = (z + 0.9) / 2.1;
+        return 0.015 + 0.42 * 0.5 * (1 + Math.cos(u * Math.PI));
+      }
+
+      function bridgeSlopeAt(z) {
+        if (z <= -3.0 || z >= 1.2) return 0;
+        var u = (z + 0.9) / 2.1;
+        return -0.21 * (Math.PI / 2.1) * Math.sin(u * Math.PI);
+      }
+
+      // Parisian Multi-Arch Stone Bridge (x = 0, width = 3.6)
       var bridgeGroup = new THREE.Group();
-      bridgeGroup.position.set(0, 0.02, 6.92);
-      var bridgeDeckMat = new THREE.MeshStandardMaterial({ color: 0xd9cbb6, roughness: 0.8 });
-      var bridgeSegs = 9;
+      var bridgeSegs = 18;
       for (var bi = 0; bi < bridgeSegs; bi++) {
-        var bt = (bi / (bridgeSegs - 1)) * 2 - 1; // -1 to 1
-        var bz = bt * 1.15;
-        var by = Math.cos(bt * Math.PI * 0.5) * 0.32 + 0.06;
-        var bSeg = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.14, 0.34), bridgeDeckMat);
-        bSeg.position.set(0, by, bz);
-        bSeg.rotation.x = Math.sin(bt * Math.PI * 0.5) * 0.28;
-        bSeg.castShadow = true;
-        bSeg.receiveShadow = true;
-        bridgeGroup.add(bSeg);
+        var z0 = -3.0 + (4.2 * bi) / bridgeSegs;
+        var z1 = -3.0 + (4.2 * (bi + 1)) / bridgeSegs;
+        var zm = (z0 + z1) * 0.5;
+        var ym = bridgeHeightAt(zm);
+        var pitch = -Math.atan(bridgeSlopeAt(zm));
+        var segLen = (4.2 / bridgeSegs) + 0.03;
 
-        // Parapets
-        [-0.43, 0.43].forEach(function (px) {
-          var para = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.14, 0.34), bridgeDeckMat);
-          para.position.set(px, by + 0.11, bz);
-          para.rotation.x = bSeg.rotation.x;
+        var roadSeg = new THREE.Mesh(new THREE.BoxGeometry(2.50, 0.14, segLen), asphaltMat);
+        roadSeg.position.set(0, ym - 0.07, zm);
+        roadSeg.rotation.x = pitch;
+        roadSeg.castShadow = true;
+        roadSeg.receiveShadow = true;
+        bridgeGroup.add(roadSeg);
+
+        [-1.50, 1.50].forEach(function (sx) {
+          var walkSeg = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.18, segLen), sidewalkMat);
+          walkSeg.position.set(sx, ym - 0.03, zm);
+          walkSeg.rotation.x = pitch;
+          walkSeg.castShadow = true;
+          walkSeg.receiveShadow = true;
+          bridgeGroup.add(walkSeg);
+        });
+
+        [-1.80, 1.80].forEach(function (px) {
+          var para = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.22, segLen), quayMat);
+          para.position.set(px, ym + 0.11, zm);
+          para.rotation.x = pitch;
           para.castShadow = true;
           bridgeGroup.add(para);
         });
       }
+
+      // Bridge river piers underneath
+      [-1.95, 0.15].forEach(function (pz) {
+        var pier = new THREE.Mesh(new THREE.BoxGeometry(3.75, 0.42, 0.42), quayMat);
+        pier.position.set(0, -0.02, pz);
+        pier.castShadow = true;
+        pier.receiveShadow = true;
+        bridgeGroup.add(pier);
+      });
       diorama.add(bridgeGroup);
 
+      // Tiny Seine Tour Boat (Bateau-Mouche)
+      var boatGroup = new THREE.Group();
+      var boatHullMat = new THREE.MeshStandardMaterial({ color: 0x263445, roughness: 0.6 });
+      var boatDeckMat = new THREE.MeshStandardMaterial({ color: 0xefe7d8, roughness: 0.7 });
+      var boatCabinMat = new THREE.MeshStandardMaterial({
+        color: 0x99b8cc,
+        roughness: 0.2,
+        metalness: 0.2,
+        emissive: new THREE.Color(0xffbe55),
+        emissiveIntensity: 0.0
+      });
+      var hull = new THREE.Mesh(new THREE.BoxGeometry(1.75, 0.14, 0.46), boatHullMat);
+      hull.position.y = 0.04;
+      hull.castShadow = true;
+      var deck = new THREE.Mesh(new THREE.BoxGeometry(1.55, 0.05, 0.42), boatDeckMat);
+      deck.position.y = 0.12;
+      var cabin = new THREE.Mesh(new THREE.BoxGeometry(1.05, 0.16, 0.34), boatCabinMat);
+      cabin.position.set(-0.05, 0.22, 0);
+      cabin.castShadow = true;
+      var roofBoat = new THREE.Mesh(new THREE.BoxGeometry(1.08, 0.03, 0.36), boatDeckMat);
+      roofBoat.position.set(-0.05, 0.31, 0);
+      boatGroup.add(hull, deck, cabin, roofBoat);
+      boatGroup.position.set(-7.5, -0.05, -0.90);
+      diorama.add(boatGroup);
+
       // -----------------------------------------------------------------------
-      // 3. Eiffel Tower (Procedural Architectural Silhouette + Instanced Trusses)
+      // 3. Parisian Street System (Asphalt, Sidewalks, Markings, Zebra Crossings)
+      // -----------------------------------------------------------------------
+      var roadRects = [
+        // Main Avenue (x = 0)
+        { x: 0, z: 9.4, w: 2.50, d: 16.4 },
+        { x: 0, z: -3.65, w: 2.50, d: 1.4 },
+        // Cross Boulevard (z = +9.2)
+        { x: 0, z: 9.2, w: 26.8, d: 2.50 },
+        // Riverfront Quay Road (z = +2.6)
+        { x: 0, z: 2.6, w: 26.8, d: 2.10 },
+        // Front Street (z = +16.1)
+        { x: 0, z: 16.1, w: 26.8, d: 2.00 },
+        // West & East Side Streets (x = ±11.9)
+        { x: -11.9, z: 9.35, w: 2.00, d: 15.5 },
+        { x: 11.9, z: 9.35, w: 2.00, d: 15.5 }
+      ];
+      roadRects.forEach(function (r) {
+        var mesh = new THREE.Mesh(new THREE.BoxGeometry(r.w, 0.03, r.d), asphaltMat);
+        mesh.position.set(r.x, 0.015, r.z);
+        mesh.receiveShadow = true;
+        diorama.add(mesh);
+      });
+
+      // Raised Sidewalk City Blocks & Perimeter Strips
+      var sidewalkBlocks = [
+        // 4 Main Quarter Blocks
+        { x: -6.075, z: 5.80, w: 9.65, d: 4.30 },
+        { x: 6.075, z: 5.80, w: 9.65, d: 4.30 },
+        { x: -6.075, z: 12.775, w: 9.65, d: 4.65 },
+        { x: 6.075, z: 12.775, w: 9.65, d: 4.65 },
+        // Quay promenades (north of Quay Road, south of river)
+        { x: -7.8, z: 1.30, w: 12.0, d: 0.50 },
+        { x: 7.8, z: 1.30, w: 12.0, d: 0.50 },
+        // Outer East/West/South border sidewalks
+        { x: -13.4, z: 9.65, w: 1.0, d: 17.2 },
+        { x: 13.4, z: 9.65, w: 1.0, d: 17.2 },
+        { x: 0, z: 17.7, w: 27.8, d: 1.2 }
+      ];
+      sidewalkBlocks.forEach(function (s) {
+        var sw = new THREE.Mesh(new THREE.BoxGeometry(s.w, 0.08, s.d), sidewalkMat);
+        sw.position.set(s.x, 0.04, s.z);
+        sw.receiveShadow = true;
+        diorama.add(sw);
+      });
+
+      // Instanced Dashed Lane Lines & Zebra Crossings
+      var markingTransforms = [];
+      function pushMarking(x, y, z, w, d) {
+        dummy.position.set(x, y, z);
+        dummy.rotation.set(0, 0, 0);
+        dummy.scale.set(w, 0.012, d);
+        dummy.updateMatrix();
+        markingTransforms.push(dummy.matrix.clone());
+      }
+
+      // Main Avenue dashed centerline (z = -2.8 .. +17.4, skip intersections)
+      for (var mz = 1.4; mz <= 17.2; mz += 0.85) {
+        if ((mz > 7.7 && mz < 10.7) || (mz > 1.3 && mz < 3.9) || (mz > 14.9 && mz < 17.3)) continue;
+        pushMarking(0, 0.032, mz, 0.09, 0.42);
+      }
+      // Dashed centerline across bridge
+      for (var bz = -2.7; bz <= 0.9; bz += 0.65) {
+        dummy.position.set(0, bridgeHeightAt(bz) + 0.008, bz);
+        dummy.rotation.set(-Math.atan(bridgeSlopeAt(bz)), 0, 0);
+        dummy.scale.set(0.085, 0.012, 0.34);
+        dummy.updateMatrix();
+        markingTransforms.push(dummy.matrix.clone());
+      }
+      // Cross Boulevard dashed centerline (z = 9.2)
+      for (var mx = -12.8; mx <= 12.8; mx += 0.9) {
+        if (Math.abs(mx) < 1.65 || Math.abs(Math.abs(mx) - 11.9) < 1.35) continue;
+        pushMarking(mx, 0.032, 9.2, 0.45, 0.09);
+      }
+      // Quay Road dashed centerline (z = 2.6)
+      for (var qx = -12.8; qx <= 12.8; qx += 0.9) {
+        if (Math.abs(qx) < 1.65 || Math.abs(Math.abs(qx) - 11.9) < 1.35) continue;
+        pushMarking(qx, 0.032, 2.6, 0.45, 0.085);
+      }
+      // Front Street dashed centerline (z = 16.1)
+      for (var fx = -11.0; fx <= 11.0; fx += 0.9) {
+        if (Math.abs(fx) < 1.65) continue;
+        pushMarking(fx, 0.032, 16.1, 0.45, 0.085);
+      }
+      // Side Streets dashed centerlines (x = ±11.9)
+      [-11.9, 11.9].forEach(function (sx) {
+        for (var sz = 3.8; sz <= 14.9; sz += 0.85) {
+          if (sz > 7.7 && sz < 10.7) continue;
+          pushMarking(sx, 0.032, sz, 0.085, 0.42);
+        }
+      });
+
+      // Zebra Crossings
+      function addZebraCrossing(cx, cz, horizontalRoad) {
+        var count = 5;
+        for (var zi = 0; zi < count; zi++) {
+          var offset = (zi - (count - 1) * 0.5) * 0.42;
+          if (horizontalRoad) {
+            pushMarking(cx, 0.034, cz + offset, 0.65, 0.18);
+          } else {
+            pushMarking(cx + offset, 0.034, cz, 0.18, 0.65);
+          }
+        }
+      }
+      // Around Main Intersection (0, 9.2)
+      addZebraCrossing(0, 7.65, false);
+      addZebraCrossing(0, 10.75, false);
+      addZebraCrossing(-1.55, 9.2, true);
+      addZebraCrossing(1.55, 9.2, true);
+      // Around Quay Intersection (0, 2.6)
+      addZebraCrossing(0, 3.95, false);
+      addZebraCrossing(-1.55, 2.6, true);
+      addZebraCrossing(1.55, 2.6, true);
+      // Around Front Intersection (0, 16.1)
+      addZebraCrossing(0, 14.8, false);
+      addZebraCrossing(-1.55, 16.1, true);
+      addZebraCrossing(1.55, 16.1, true);
+      // Side street intersections & bridge north entrance
+      addZebraCrossing(-10.6, 9.2, true);
+      addZebraCrossing(10.6, 9.2, true);
+      addZebraCrossing(0, -3.15, false);
+
+      var markingMat = new THREE.MeshStandardMaterial({ color: 0xf2eee4, roughness: 0.72 });
+      var markingInst = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), markingMat, markingTransforms.length);
+      markingInst.receiveShadow = true;
+      for (var mi = 0; mi < markingTransforms.length; mi++) {
+        markingInst.setMatrixAt(mi, markingTransforms[mi]);
+      }
+      markingInst.instanceMatrix.needsUpdate = true;
+      diorama.add(markingInst);
+
+      // -----------------------------------------------------------------------
+      // 4. Eiffel Tower (100% Preserved Structure, Bulbs & Soft Searchlight)
       // -----------------------------------------------------------------------
       var towerGroup = new THREE.Group();
+      towerGroup.position.set(0, 0, TOWER_Z);
       diorama.add(towerGroup);
 
       var ironMat = new THREE.MeshStandardMaterial({
@@ -512,7 +804,6 @@
         beamTransforms.push(m);
       }
 
-      // Tower width profile w(y): half-distance from tower axis to leg center
       function towerHalfWidth(y) {
         if (y <= 3.5) {
           var t = y / 3.5;
@@ -544,7 +835,6 @@
         [1, -1]
       ];
 
-      // Stone pedestals under the 4 legs
       var plinthMat = new THREE.MeshStandardMaterial({ color: 0xcfc2ae, roughness: 0.85 });
       corners.forEach(function (c) {
         var plinth = new THREE.Mesh(new THREE.BoxGeometry(1.05, 0.28, 1.05), plinthMat);
@@ -554,7 +844,6 @@
         towerGroup.add(plinth);
       });
 
-      // Helper: build a trussed leg column between yStart and yEnd
       function buildLegSection(yStart, yEnd, steps, chordThick, braceThick) {
         corners.forEach(function (c) {
           var sx = c[0], sz = c[1];
@@ -579,11 +868,8 @@
 
             for (var k = 0; k < 4; k++) {
               var kn = (k + 1) % 4;
-              // Corner chord
               pushBeam(ring0[k], ring1[k], chordThick);
-              // Horizontal tie
               pushBeam(ring1[k], ring1[kn], braceThick);
-              // Diagonal X-brace on each face of the leg
               pushBeam(ring0[k], ring1[kn], braceThick * 0.85);
               pushBeam(ring0[kn], ring1[k], braceThick * 0.85);
             }
@@ -591,10 +877,8 @@
         });
       }
 
-      // Section 1: 4 Legs (y = 0.25 to 3.45)
       buildLegSection(0.25, 3.45, 7, 0.085, 0.042);
 
-      // 4 Iconic Arches between legs (y = 0.4 to 2.75)
       var archSegs = 14;
       for (var face = 0; face < 4; face++) {
         var cA = corners[face];
@@ -603,11 +887,10 @@
         var prevInner = null;
 
         for (var ai = 0; ai <= archSegs; ai++) {
-          var at = ai / archSegs; // 0..1
+          var at = ai / archSegs;
           var angle = at * Math.PI;
           var archY = 0.55 + Math.sin(angle) * 2.15;
           var wAtY = towerHalfWidth(archY);
-          // Span from -wAtY to +wAtY along the face
           var span = (at * 2 - 1);
           var px = (cA[0] === cB[0]) ? cA[0] * wAtY : span * wAtY;
           var pz = (cA[1] === cB[1]) ? cA[1] * wAtY : span * wAtY;
@@ -626,7 +909,6 @@
         }
       }
 
-      // Horizontal girder belt just below 1st floor
       for (var f1 = 0; f1 < 4; f1++) {
         var a1 = corners[f1], b1 = corners[(f1 + 1) % 4];
         var wBelt = towerHalfWidth(3.15);
@@ -637,10 +919,8 @@
         );
       }
 
-      // Section 2: 1st to 2nd Floor (y = 3.6 to 6.95)
       buildLegSection(3.6, 6.95, 6, 0.075, 0.038);
 
-      // Cross-bracing on all 4 outer faces between 1st and 2nd floor
       var bays2 = 4;
       for (var bi2 = 0; bi2 < bays2; bi2++) {
         var by0 = 3.65 + (6.9 - 3.65) * (bi2 / bays2);
@@ -659,7 +939,6 @@
         }
       }
 
-      // Section 3: 2nd Floor to Summit Deck (y = 7.1 to 14.0)
       var bays3 = 14;
       for (var bi3 = 0; bi3 < bays3; bi3++) {
         var sy0 = 7.1 + (14.0 - 7.1) * (bi3 / bays3);
@@ -679,7 +958,6 @@
         }
       }
 
-      // Create the single InstancedMesh for all Eiffel Tower iron beams
       var beamGeo = new THREE.BoxGeometry(1, 1, 1);
       var beamInstanced = new THREE.InstancedMesh(beamGeo, ironMat, beamTransforms.length);
       beamInstanced.castShadow = true;
@@ -690,7 +968,6 @@
       beamInstanced.instanceMatrix.needsUpdate = true;
       towerGroup.add(beamInstanced);
 
-      // Platforms (1st Floor, 2nd Floor, Summit)
       function addPlatform(y, halfSize, height, railHeight) {
         var deck = new THREE.Mesh(new THREE.BoxGeometry(halfSize * 2, height, halfSize * 2), ironMat);
         deck.position.y = y;
@@ -703,7 +980,6 @@
         cornice.castShadow = true;
         towerGroup.add(cornice);
 
-        // Simple top perimeter railing bars
         var r = halfSize + 0.04;
         var ry = y + height * 0.5 + railHeight;
         var railBar1 = new THREE.Mesh(new THREE.BoxGeometry(r * 2, 0.04, 0.04), ironMat);
@@ -721,7 +997,6 @@
       addPlatform(7.02, 1.24, 0.20, 0.16);
       addPlatform(14.08, 0.36, 0.16, 0.12);
 
-      // Summit Observation Gallery + Cupola + Antenna
       var galleryMat = new THREE.MeshStandardMaterial({
         color: 0x5c4130,
         roughness: 0.45,
@@ -748,11 +1023,8 @@
       antenna.position.y = 16.9;
       towerGroup.add(antenna);
 
-      // -----------------------------------------------------------------------
-      // 4. Tower Night Lights & Summit Searchlight Beams
-      // -----------------------------------------------------------------------
+      // Tower Night Bulbs + Softly Fading Rotating Searchlights
       var bulbPositions = [];
-      // Dense bulbs along the 4 corner ridges
       for (var li = 1; li <= 56; li++) {
         var ly = (li / 56) * 14.0;
         var lw = towerHalfWidth(ly) + legHalfThick(ly) * 0.45;
@@ -760,7 +1032,6 @@
           bulbPositions.push(new THREE.Vector3(c[0] * lw, ly, c[1] * lw));
         });
       }
-      // Bulbs along the spire section (y = 14.25 .. 16.25)
       for (var si2 = 0; si2 < 7; si2++) {
         var sy = 14.25 + si2 * 0.32;
         var sr2 = 0.24 * (1 - si2 / 7) + 0.04;
@@ -768,7 +1039,6 @@
           bulbPositions.push(new THREE.Vector3(c[0] * sr2, sy, c[1] * sr2));
         });
       }
-      // Bulbs ringing 1st, 2nd, 3rd floor cornices + platform undersides
       [
         { y: 3.55, r: 2.08, n: 16 },
         { y: 3.34, r: 1.96, n: 12 },
@@ -790,11 +1060,11 @@
         transparent: true,
         opacity: 0.0
       });
-      var bulbGeo = new THREE.SphereGeometry(0.068, 6, 6);
+      var bulbGeo = new THREE.SphereGeometry(0.088, 6, 6);
       var bulbInstanced = new THREE.InstancedMesh(bulbGeo, bulbMat, bulbPositions.length);
-      var dummy = new THREE.Object3D();
       for (var bi = 0; bi < bulbPositions.length; bi++) {
         dummy.position.copy(bulbPositions[bi]);
+        dummy.rotation.set(0, 0, 0);
         dummy.scale.setScalar(1);
         dummy.updateMatrix();
         bulbInstanced.setMatrixAt(bi, dummy.matrix);
@@ -803,7 +1073,6 @@
       bulbInstanced.visible = false;
       towerGroup.add(bulbInstanced);
 
-      // Summit Beacon Orb & Softly Fading Rotating Searchlight Beams
       var beaconMat = new THREE.MeshBasicMaterial({
         color: 0xfff0b8,
         transparent: true,
@@ -870,164 +1139,6 @@
       beam2.rotation.x = -0.04;
       searchlightPivot.add(beam1, beam2);
 
-      // -----------------------------------------------------------------------
-      // 5. Supporting Props: Trees, Street Lamps, Parisian Buildings
-      // -----------------------------------------------------------------------
-      // Trees around the plaza
-      var treePositions = [
-        [-5.4, -5.2], [-6.8, -3.2], [-7.5, -1.0],
-        [5.4, -5.2], [6.8, -3.2], [7.5, -1.0],
-        [-5.4, 2.2], [-4.2, 4.3], [5.4, 2.2], [4.2, 4.3],
-        [-2.2, -5.8], [2.2, -5.8], [-2.2, -8.0], [2.2, -8.0],
-        [-7.2, 3.6], [7.2, 3.6]
-      ];
-      var trunkMat = new THREE.MeshStandardMaterial({ color: 0x4b3526, roughness: 0.9 });
-      var foliageMat = new THREE.MeshStandardMaterial({ color: 0x2f5132, roughness: 0.85 });
-
-      var trunkInst = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.055, 0.08, 0.55, 7), trunkMat, treePositions.length);
-      trunkInst.castShadow = true;
-      var crownInst = new THREE.InstancedMesh(new THREE.SphereGeometry(0.42, 10, 8), foliageMat, treePositions.length * 2);
-      crownInst.castShadow = true;
-      crownInst.receiveShadow = true;
-
-      for (var ti = 0; ti < treePositions.length; ti++) {
-        var tx = treePositions[ti][0], tz = treePositions[ti][1];
-        var sc = 0.85 + ((ti * 37) % 10) * 0.035;
-        dummy.position.set(tx, 0.27 * sc, tz);
-        dummy.scale.set(sc, sc, sc);
-        dummy.updateMatrix();
-        trunkInst.setMatrixAt(ti, dummy.matrix);
-
-        dummy.position.set(tx, 0.72 * sc, tz);
-        dummy.scale.set(sc, sc * 1.15, sc);
-        dummy.updateMatrix();
-        crownInst.setMatrixAt(ti * 2, dummy.matrix);
-
-        dummy.position.set(tx + 0.14 * sc, 0.96 * sc, tz - 0.1 * sc);
-        dummy.scale.set(sc * 0.72, sc * 0.78, sc * 0.72);
-        dummy.updateMatrix();
-        crownInst.setMatrixAt(ti * 2 + 1, dummy.matrix);
-      }
-      trunkInst.instanceMatrix.needsUpdate = true;
-      crownInst.instanceMatrix.needsUpdate = true;
-      diorama.add(trunkInst, crownInst);
-
-      // Street Lamps
-      var lampCoords = [
-        [-1.35, 3.8], [1.35, 3.8],
-        [-1.35, -3.8], [1.35, -3.8],
-        [-4.2, 1.35], [4.2, 1.35],
-        [-4.2, -1.35], [4.2, -1.35],
-        [-0.55, 6.92], [0.55, 6.92],
-        [-6.2, 1.35], [6.2, 1.35]
-      ];
-      var lampPostMat = new THREE.MeshStandardMaterial({ color: 0x222730, roughness: 0.5, metalness: 0.6 });
-      var lampBulbMat = new THREE.MeshStandardMaterial({
-        color: 0xffe4a8,
-        roughness: 0.3,
-        emissive: new THREE.Color(0xffbe55),
-        emissiveIntensity: 0.05
-      });
-
-      var lampPostInst = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.025, 0.038, 0.72, 6), lampPostMat, lampCoords.length);
-      lampPostInst.castShadow = true;
-      var lampHeadInst = new THREE.InstancedMesh(new THREE.SphereGeometry(0.085, 8, 8), lampBulbMat, lampCoords.length);
-
-      for (var lpi = 0; lpi < lampCoords.length; lpi++) {
-        var lx = lampCoords[lpi][0], lz = lampCoords[lpi][1];
-        var baseH = (Math.abs(lz - 6.92) < 0.1) ? 0.36 : 0.0;
-        dummy.position.set(lx, baseH + 0.36, lz);
-        dummy.scale.set(1, 1, 1);
-        dummy.updateMatrix();
-        lampPostInst.setMatrixAt(lpi, dummy.matrix);
-
-        dummy.position.set(lx, baseH + 0.75, lz);
-        dummy.updateMatrix();
-        lampHeadInst.setMatrixAt(lpi, dummy.matrix);
-      }
-      lampPostInst.instanceMatrix.needsUpdate = true;
-      lampHeadInst.instanceMatrix.needsUpdate = true;
-      diorama.add(lampPostInst, lampHeadInst);
-
-      // Parisian Haussmann Buildings along the back arc (z < -5.8)
-      var bldgFacadeMat = new THREE.MeshStandardMaterial({ color: 0xe6dcc8, roughness: 0.82 });
-      var bldgRoofMat = new THREE.MeshStandardMaterial({ color: 0x2d3440, roughness: 0.65, metalness: 0.15 });
-      var windowLitMat = new THREE.MeshStandardMaterial({
-        color: 0x3b404d,
-        roughness: 0.4,
-        emissive: new THREE.Color(0xffa61a),
-        emissiveIntensity: 0.0
-      });
-      var windowDarkMat = new THREE.MeshStandardMaterial({ color: 0x353b47, roughness: 0.45 });
-
-      var buildings = [
-        { x: -5.2, z: -6.8, w: 1.9, h: 1.65, d: 1.35, rot: 0.55 },
-        { x: -3.1, z: -7.9, w: 2.1, h: 1.95, d: 1.4, rot: 0.25 },
-        { x: 3.1, z: -7.9, w: 2.0, h: 1.85, d: 1.4, rot: -0.25 },
-        { x: 5.2, z: -6.8, w: 1.85, h: 1.6, d: 1.35, rot: -0.55 },
-        { x: -7.1, z: -4.9, w: 1.65, h: 1.5, d: 1.25, rot: 0.85 },
-        { x: 7.1, z: -4.9, w: 1.65, h: 1.55, d: 1.25, rot: -0.85 }
-      ];
-
-      buildings.forEach(function (b, bIdx) {
-        var bg = new THREE.Group();
-        bg.position.set(b.x, 0, b.z);
-        bg.rotation.y = b.rot;
-
-        var body = new THREE.Mesh(new THREE.BoxGeometry(b.w, b.h, b.d), bldgFacadeMat);
-        body.position.y = b.h * 0.5;
-        body.castShadow = true;
-        body.receiveShadow = true;
-        bg.add(body);
-
-        // Mansard pitched roof (4-sided truncated pyramid)
-        var roof = new THREE.Mesh(new THREE.CylinderGeometry(b.w * 0.42, b.w * 0.68, 0.48, 4), bldgRoofMat);
-        roof.rotation.y = Math.PI / 4;
-        roof.scale.set(1, 1, b.d / b.w);
-        roof.position.y = b.h + 0.24;
-        roof.castShadow = true;
-        bg.add(roof);
-
-        // Windows on front face (+z)
-        var cols = 4, rows = 3;
-        for (var r = 0; r < rows; r++) {
-          for (var c = 0; c < cols; c++) {
-            var isLit = ((bIdx * 7 + r * 5 + c * 3) % 11) < 5;
-            var win = new THREE.Mesh(
-              new THREE.BoxGeometry(0.22, 0.28, 0.04),
-              isLit ? windowLitMat : windowDarkMat
-            );
-            win.position.set(
-              (c - (cols - 1) * 0.5) * (b.w * 0.21),
-              0.38 + r * (b.h * 0.28),
-              b.d * 0.5 + 0.01
-            );
-            bg.add(win);
-          }
-        }
-        diorama.add(bg);
-      });
-
-      // -----------------------------------------------------------------------
-      // 6. Atmosphere: Soft Glow Sprite, Floating Golden Dust & Night Stars
-      // -----------------------------------------------------------------------
-      function createGlowTexture() {
-        var c = document.createElement('canvas');
-        c.width = 64;
-        c.height = 64;
-        var ctx = c.getContext('2d');
-        var grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-        grad.addColorStop(0, 'rgba(255, 245, 210, 1)');
-        grad.addColorStop(0.35, 'rgba(255, 215, 130, 0.65)');
-        grad.addColorStop(1, 'rgba(255, 200, 100, 0)');
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, 64, 64);
-        return new THREE.CanvasTexture(c);
-      }
-
-      var glowTex = createGlowTexture();
-
-      // Soft golden halo sprites for tower night bulbs & summit beacon
       var bulbGlowPos = new Float32Array(bulbPositions.length * 3);
       for (var gi = 0; gi < bulbPositions.length; gi++) {
         bulbGlowPos[gi * 3] = bulbPositions[gi].x;
@@ -1037,7 +1148,7 @@
       var bulbGlowGeo = new THREE.BufferGeometry();
       bulbGlowGeo.setAttribute('position', new THREE.BufferAttribute(bulbGlowPos, 3));
       var bulbGlowMat = new THREE.PointsMaterial({
-        size: 0.52,
+        size: 0.85,
         map: glowTex,
         color: 0xffcc55,
         transparent: true,
@@ -1063,38 +1174,928 @@
       beaconSprite.visible = false;
       towerGroup.add(beaconSprite);
 
-      // Floating golden dust particles
-      var dustCount = 95;
+      // -----------------------------------------------------------------------
+      // 5. Haussmann Buildings, Cafes, Awnings & Outdoor Bistro Seating
+      // -----------------------------------------------------------------------
+      var facadeMats = [
+        new THREE.MeshStandardMaterial({ color: 0xe7ddca, roughness: 0.82 }),
+        new THREE.MeshStandardMaterial({ color: 0xdfd2bc, roughness: 0.84 }),
+        new THREE.MeshStandardMaterial({ color: 0xede5d5, roughness: 0.80 })
+      ];
+      var bldgRoofMat = new THREE.MeshStandardMaterial({ color: 0x2d3440, roughness: 0.65, metalness: 0.16 });
+      var corniceMat = new THREE.MeshStandardMaterial({ color: 0xd5c7b2, roughness: 0.82 });
+      var windowLitMat = new THREE.MeshStandardMaterial({
+        color: 0x3b404d,
+        roughness: 0.38,
+        emissive: new THREE.Color(0xffaa28),
+        emissiveIntensity: 0.0
+      });
+      var windowDarkMat = new THREE.MeshStandardMaterial({ color: 0x353b47, roughness: 0.45 });
+      var cafeWinMat = new THREE.MeshStandardMaterial({
+        color: 0x453b32,
+        roughness: 0.3,
+        emissive: new THREE.Color(0xffb84d),
+        emissiveIntensity: 0.0
+      });
+      var awningRedMat = new THREE.MeshStandardMaterial({ map: redAwningTex, roughness: 0.72, side: THREE.DoubleSide });
+      var awningGreenMat = new THREE.MeshStandardMaterial({ map: greenAwningTex, roughness: 0.72, side: THREE.DoubleSide });
+
+      var buildings = [
+        // Mid-West Block (z ~ 5.8)
+        { x: -8.6, z: 5.8, w: 2.55, d: 2.1, h: 2.50, tone: 0, rot: 0 },
+        { x: -5.9, z: 5.8, w: 2.55, d: 2.1, h: 3.10, tone: 1, rot: 0 },
+        { x: -3.25, z: 5.8, w: 2.45, d: 2.1, h: 2.35, tone: 2, rot: 0 },
+        // Mid-East Block (z ~ 5.8) - corner cafe #3 facing Main Ave / Cross Blvd
+        { x: 3.25, z: 5.8, w: 2.45, d: 2.1, h: 2.40, tone: 0, rot: 0, cafe: 'green', cafeFace: 'SW' },
+        { x: 5.9, z: 5.8, w: 2.55, d: 2.1, h: 3.15, tone: 2, rot: 0 },
+        { x: 8.6, z: 5.8, w: 2.55, d: 2.1, h: 2.55, tone: 1, rot: 0 },
+        // Near-West Block (z ~ 12.8) - corner cafe #1 facing Cross Blvd / Main Ave
+        { x: -8.6, z: 12.8, w: 2.50, d: 2.2, h: 2.20, tone: 1, rot: 0 },
+        { x: -5.9, z: 12.8, w: 2.55, d: 2.2, h: 2.65, tone: 0, rot: 0 },
+        { x: -3.3, z: 12.8, w: 2.35, d: 2.2, h: 2.10, tone: 2, rot: 0, cafe: 'red', cafeFace: 'NE' },
+        // Near-East Block (z ~ 12.8) - corner cafe #2 facing Cross Blvd / Main Ave
+        { x: 3.3, z: 12.8, w: 2.35, d: 2.2, h: 2.15, tone: 2, rot: 0, cafe: 'green', cafeFace: 'NW' },
+        { x: 5.9, z: 12.8, w: 2.55, d: 2.2, h: 2.55, tone: 1, rot: 0 },
+        { x: 8.6, z: 12.8, w: 2.50, d: 2.2, h: 2.05, tone: 0, rot: 0 },
+        // Far Champ de Mars framing corner buildings
+        { x: -11.5, z: -15.6, w: 2.6, d: 2.0, h: 2.30, tone: 0, rot: 0.22 },
+        { x: 11.5, z: -15.6, w: 2.6, d: 2.0, h: 2.40, tone: 1, rot: -0.22 },
+        { x: -11.9, z: -5.0, w: 2.2, d: 1.9, h: 2.05, tone: 2, rot: 0.0 }
+      ];
+
+      var winLitMatrices = [];
+      var winDarkMatrices = [];
+      var bldgWinDummy = new THREE.Object3D();
+
+      buildings.forEach(function (b, bIdx) {
+        var bg = new THREE.Group();
+        bg.position.set(b.x, 0.08, b.z);
+        bg.rotation.y = b.rot;
+
+        var body = new THREE.Mesh(new THREE.BoxGeometry(b.w, b.h, b.d), facadeMats[b.tone]);
+        body.position.y = b.h * 0.5;
+        body.castShadow = true;
+        body.receiveShadow = true;
+        bg.add(body);
+
+        // Cornice band under mansard roof
+        var cornice = new THREE.Mesh(new THREE.BoxGeometry(b.w + 0.10, 0.08, b.d + 0.10), corniceMat);
+        cornice.position.y = b.h;
+        bg.add(cornice);
+
+        // Mansard pitched roof
+        var roofH = 0.48;
+        var roof = new THREE.Mesh(new THREE.CylinderGeometry(b.w * 0.42, b.w * 0.68, roofH, 4), bldgRoofMat);
+        roof.rotation.y = Math.PI / 4;
+        roof.scale.set(1, 1, b.d / b.w);
+        roof.position.y = b.h + roofH * 0.5 + 0.03;
+        roof.castShadow = true;
+        bg.add(roof);
+
+        // Small Parisian chimney pots
+        var chim = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.24, 0.16), corniceMat);
+        chim.position.set(b.w * 0.24, b.h + roofH + 0.08, -b.d * 0.12);
+        bg.add(chim);
+
+        // Cafe ground floor storefront & solid 3D sloped striped awnings
+        if (b.cafe) {
+          var aMat = b.cafe === 'green' ? awningGreenMat : awningRedMat;
+          if (b.cafeFace === 'NE' || b.cafeFace === 'NW') {
+            // Front (-Z) awning + storefront window facing Cross Blvd
+            var awFront = new THREE.Mesh(new THREE.BoxGeometry(b.w * 0.88, 0.045, 0.56), aMat);
+            awFront.position.set(0, 0.72, -b.d * 0.5 - 0.24);
+            awFront.rotation.order = 'YXZ';
+            awFront.rotation.y = Math.PI;
+            awFront.rotation.x = 0.38;
+            awFront.castShadow = true;
+            bg.add(awFront);
+
+            var shopFront = new THREE.Mesh(new THREE.BoxGeometry(b.w * 0.76, 0.46, 0.05), cafeWinMat);
+            shopFront.position.set(0, 0.34, -b.d * 0.5 - 0.01);
+            bg.add(shopFront);
+
+            var sideSign = (b.cafeFace === 'NE') ? 1 : -1;
+            var awSide = new THREE.Mesh(new THREE.BoxGeometry(b.d * 0.76, 0.045, 0.52), aMat);
+            awSide.position.set(sideSign * (b.w * 0.5 + 0.22), 0.72, 0);
+            awSide.rotation.order = 'YXZ';
+            awSide.rotation.y = sideSign * Math.PI * 0.5;
+            awSide.rotation.x = 0.38;
+            awSide.castShadow = true;
+            bg.add(awSide);
+
+            var shopSide = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.46, b.d * 0.65), cafeWinMat);
+            shopSide.position.set(sideSign * (b.w * 0.5 + 0.01), 0.34, 0);
+            bg.add(shopSide);
+          } else {
+            // SW cafe on NE block: +Z facing Cross Blvd, -X facing Main Ave
+            var awF2 = new THREE.Mesh(new THREE.BoxGeometry(b.w * 0.88, 0.045, 0.56), aMat);
+            awF2.position.set(0, 0.72, b.d * 0.5 + 0.24);
+            awF2.rotation.order = 'YXZ';
+            awF2.rotation.x = 0.38;
+            awF2.castShadow = true;
+            bg.add(awF2);
+
+            var shopF2 = new THREE.Mesh(new THREE.BoxGeometry(b.w * 0.76, 0.46, 0.05), cafeWinMat);
+            shopF2.position.set(0, 0.34, b.d * 0.5 + 0.01);
+            bg.add(shopF2);
+
+            var awS2 = new THREE.Mesh(new THREE.BoxGeometry(b.d * 0.76, 0.045, 0.52), aMat);
+            awS2.position.set(-b.w * 0.5 - 0.22, 0.72, 0);
+            awS2.rotation.order = 'YXZ';
+            awS2.rotation.y = -Math.PI * 0.5;
+            awS2.rotation.x = 0.38;
+            awS2.castShadow = true;
+            bg.add(awS2);
+
+            var shopS2 = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.46, b.d * 0.65), cafeWinMat);
+            shopS2.position.set(-b.w * 0.5 - 0.01, 0.34, 0);
+            bg.add(shopS2);
+          }
+        }
+
+        bg.updateMatrixWorld(true);
+        diorama.add(bg);
+
+        // Collect 4-sided windows into shared InstancedMesh lists
+        var stories = Math.max(3, Math.round(b.h / 0.62));
+        var startRow = b.cafe ? 1 : 0;
+        var colsFB = 4;
+        var colsLR = 3;
+        for (var r = startRow; r < stories; r++) {
+          var wy = 0.38 + r * ((b.h - 0.35) / stories);
+          // Front (+Z) & Back (-Z)
+          for (var c = 0; c < colsFB; c++) {
+            var wx = (c - (colsFB - 1) * 0.5) * (b.w * 0.21);
+            [1, -1].forEach(function (zSide, sideIdx) {
+              bldgWinDummy.position.set(wx, wy, zSide * (b.d * 0.5 + 0.015));
+              bldgWinDummy.rotation.set(0, 0, 0);
+              bldgWinDummy.scale.set(0.22, 0.28, 0.04);
+              bldgWinDummy.updateMatrix();
+              var wm = new THREE.Matrix4().multiplyMatrices(bg.matrixWorld, bldgWinDummy.matrix);
+              var isLit = ((bIdx * 7 + r * 5 + c * 3 + sideIdx * 2) % 11) < 5;
+              (isLit ? winLitMatrices : winDarkMatrices).push(wm);
+            });
+          }
+          // Left (-X) & Right (+X)
+          for (var cl = 0; cl < colsLR; cl++) {
+            var wz = (cl - (colsLR - 1) * 0.5) * (b.d * 0.26);
+            [1, -1].forEach(function (xSide, sideIdx) {
+              bldgWinDummy.position.set(xSide * (b.w * 0.5 + 0.015), wy, wz);
+              bldgWinDummy.rotation.set(0, Math.PI * 0.5, 0);
+              bldgWinDummy.scale.set(0.20, 0.28, 0.04);
+              bldgWinDummy.updateMatrix();
+              var wm = new THREE.Matrix4().multiplyMatrices(bg.matrixWorld, bldgWinDummy.matrix);
+              var isLit = ((bIdx * 9 + r * 3 + cl * 5 + sideIdx) % 11) < 4;
+              (isLit ? winLitMatrices : winDarkMatrices).push(wm);
+            });
+          }
+        }
+      });
+
+      var winBoxGeo = new THREE.BoxGeometry(1, 1, 1);
+      var winLitInst = new THREE.InstancedMesh(winBoxGeo, windowLitMat, winLitMatrices.length);
+      for (var wli = 0; wli < winLitMatrices.length; wli++) winLitInst.setMatrixAt(wli, winLitMatrices[wli]);
+      winLitInst.instanceMatrix.needsUpdate = true;
+      diorama.add(winLitInst);
+
+      var winDarkInst = new THREE.InstancedMesh(winBoxGeo, windowDarkMat, winDarkMatrices.length);
+      for (var wdi = 0; wdi < winDarkMatrices.length; wdi++) winDarkInst.setMatrixAt(wdi, winDarkMatrices[wdi]);
+      winDarkInst.instanceMatrix.needsUpdate = true;
+      diorama.add(winDarkInst);
+
+      // Outdoor Cafe Bistro Tables & Chairs (InstancedMesh)
+      var tableCoords = [
+        // Cafe #1 (SW corner)
+        [-4.1, 11.1], [-3.3, 11.1], [-2.5, 11.1], [-1.75, 12.2], [-1.75, 13.1],
+        // Cafe #2 (SE corner)
+        [2.5, 11.1], [3.3, 11.1], [4.1, 11.1], [1.75, 12.2], [1.75, 13.1],
+        // Cafe #3 (NE block SW corner)
+        [2.5, 7.4], [3.3, 7.4], [1.75, 6.2]
+      ];
+      var tableTopMat = new THREE.MeshStandardMaterial({ color: 0xf4efe6, roughness: 0.4 });
+      var chairMat = new THREE.MeshStandardMaterial({ color: 0x70482d, roughness: 0.7 });
+      var tableTopInst = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.17, 0.17, 0.025, 10), tableTopMat, tableCoords.length);
+      var tableLegInst = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.025, 0.05, 0.22, 6), ironMat, tableCoords.length);
+      var chairInst = new THREE.InstancedMesh(new THREE.BoxGeometry(0.11, 0.14, 0.11), chairMat, tableCoords.length * 2);
+      tableTopInst.castShadow = true;
+      chairInst.castShadow = true;
+
+      for (var tci = 0; tci < tableCoords.length; tci++) {
+        var tx = tableCoords[tci][0], tz = tableCoords[tci][1];
+        dummy.position.set(tx, 0.30, tz);
+        dummy.rotation.set(0, 0, 0);
+        dummy.scale.set(1, 1, 1);
+        dummy.updateMatrix();
+        tableTopInst.setMatrixAt(tci, dummy.matrix);
+
+        dummy.position.set(tx, 0.19, tz);
+        dummy.updateMatrix();
+        tableLegInst.setMatrixAt(tci, dummy.matrix);
+
+        dummy.position.set(tx - 0.22, 0.15, tz);
+        dummy.updateMatrix();
+        chairInst.setMatrixAt(tci * 2, dummy.matrix);
+
+        dummy.position.set(tx + 0.22, 0.15, tz);
+        dummy.updateMatrix();
+        chairInst.setMatrixAt(tci * 2 + 1, dummy.matrix);
+      }
+      tableTopInst.instanceMatrix.needsUpdate = true;
+      tableLegInst.instanceMatrix.needsUpdate = true;
+      chairInst.instanceMatrix.needsUpdate = true;
+      diorama.add(tableTopInst, tableLegInst, chairInst);
+
+      // -----------------------------------------------------------------------
+      // 6. Street Furniture: Trees, Street Lamps, Benches, Bus Stops
+      // -----------------------------------------------------------------------
+      var treePositions = [
+        // Main Ave boulevard trees
+        [-1.65, 4.4], [1.65, 4.4], [-1.65, 7.2], [1.65, 7.2],
+        [-1.65, 11.2], [1.65, 11.2], [-1.65, 14.3], [1.65, 14.3],
+        // Cross Blvd & Quay Promenade trees
+        [-7.2, 7.5], [-4.6, 7.5], [4.6, 7.5], [7.2, 7.5],
+        [-9.8, 10.9], [-6.8, 10.9], [6.8, 10.9], [9.8, 10.9],
+        [-9.5, 1.3], [-5.5, 1.3], [5.5, 1.3], [9.5, 1.3],
+        [-8.5, 17.6], [-4.5, 17.6], [4.5, 17.6], [8.5, 17.6],
+        [-13.4, 5.5], [-13.4, 13.0], [13.4, 5.5], [13.4, 13.0],
+        // Champ de Mars & Tower Plaza trees
+        [-4.8, -4.6], [4.8, -4.6], [-8.8, -4.8], [8.8, -4.8],
+        [-5.2, -7.2], [5.2, -7.2], [-9.2, -7.5], [9.2, -7.5],
+        [-5.2, -12.4], [5.2, -12.4], [-8.6, -12.8], [8.6, -12.8],
+        [-4.5, -16.2], [4.5, -16.2], [-8.4, -16.4], [8.4, -16.4],
+        [-12.2, -9.8], [12.2, -9.8], [-12.2, -13.2], [12.2, -13.2]
+      ];
+      var trunkMat = new THREE.MeshStandardMaterial({ color: 0x4b3526, roughness: 0.9 });
+      var foliageMat = new THREE.MeshStandardMaterial({ color: 0x325634, roughness: 0.85 });
+
+      var trunkInst = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.055, 0.08, 0.56, 7), trunkMat, treePositions.length);
+      trunkInst.castShadow = true;
+      var crownInst = new THREE.InstancedMesh(new THREE.SphereGeometry(0.40, 10, 8), foliageMat, treePositions.length * 2);
+      crownInst.castShadow = true;
+      crownInst.receiveShadow = true;
+
+      for (var ti = 0; ti < treePositions.length; ti++) {
+        var trx = treePositions[ti][0], trz = treePositions[ti][1];
+        var baseTreeY = (trz > 0.95) ? 0.08 : 0.02;
+        var sc = 0.84 + ((ti * 37) % 10) * 0.032;
+        dummy.position.set(trx, baseTreeY + 0.28 * sc, trz);
+        dummy.rotation.set(0, 0, 0);
+        dummy.scale.set(sc, sc, sc);
+        dummy.updateMatrix();
+        trunkInst.setMatrixAt(ti, dummy.matrix);
+
+        dummy.position.set(trx, baseTreeY + 0.72 * sc, trz);
+        dummy.scale.set(sc, sc * 1.15, sc);
+        dummy.updateMatrix();
+        crownInst.setMatrixAt(ti * 2, dummy.matrix);
+
+        dummy.position.set(trx + 0.13 * sc, baseTreeY + 0.95 * sc, trz - 0.1 * sc);
+        dummy.scale.set(sc * 0.72, sc * 0.78, sc * 0.72);
+        dummy.updateMatrix();
+        crownInst.setMatrixAt(ti * 2 + 1, dummy.matrix);
+      }
+      trunkInst.instanceMatrix.needsUpdate = true;
+      crownInst.instanceMatrix.needsUpdate = true;
+      diorama.add(trunkInst, crownInst);
+
+      // Parisian Street Lamps (Main Ave, Cross Blvd, Quay, Bridge & Tower Plaza)
+      var lampCoords = [
+        // Bridge lamps
+        [-1.68, -2.3], [1.68, -2.3],
+        [-1.68, -0.9], [1.68, -0.9],
+        [-1.68, 0.5], [1.68, 0.5],
+        // Main Avenue lamps
+        [-1.45, 4.1], [1.45, 4.1],
+        [-1.45, 6.8], [1.45, 6.8],
+        [-1.45, 11.4], [1.45, 11.4],
+        [-1.45, 14.5], [1.45, 14.5],
+        // Cross Blvd lamps
+        [-9.2, 7.75], [-5.2, 7.75], [5.2, 7.75], [9.2, 7.75],
+        [-9.2, 10.65], [-5.2, 10.65], [5.2, 10.65], [9.2, 10.65],
+        // Quay Promenade lamps
+        [-7.6, 1.35], [-3.6, 1.35], [3.6, 1.35], [7.6, 1.35],
+        // Front street lamps
+        [-6.5, 17.3], [6.5, 17.3],
+        // Tower Plaza lamps
+        [-3.4, -4.5], [3.4, -4.5],
+        [-3.6, -6.4], [3.6, -6.4],
+        [-3.6, -13.2], [3.6, -13.2]
+      ];
+      var lampPostMat = new THREE.MeshStandardMaterial({ color: 0x20252e, roughness: 0.48, metalness: 0.62 });
+      var lampBulbMat = new THREE.MeshStandardMaterial({
+        color: 0xffe4a8,
+        roughness: 0.25,
+        emissive: new THREE.Color(0xffbd52),
+        emissiveIntensity: 0.08
+      });
+
+      var lampPostInst = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.024, 0.038, 0.76, 6), lampPostMat, lampCoords.length);
+      lampPostInst.castShadow = true;
+      var lampHeadInst = new THREE.InstancedMesh(new THREE.SphereGeometry(0.082, 8, 8), lampBulbMat, lampCoords.length);
+      var lampGlowPos = new Float32Array(lampCoords.length * 3);
+
+      for (var lpi = 0; lpi < lampCoords.length; lpi++) {
+        var lx = lampCoords[lpi][0], lz = lampCoords[lpi][1];
+        var baseH = (lz >= -3.0 && lz <= 1.2 && Math.abs(lx) < 2.0)
+          ? bridgeHeightAt(lz) + 0.04
+          : (lz > 0.95 ? 0.08 : 0.02);
+        dummy.position.set(lx, baseH + 0.38, lz);
+        dummy.rotation.set(0, 0, 0);
+        dummy.scale.set(1, 1, 1);
+        dummy.updateMatrix();
+        lampPostInst.setMatrixAt(lpi, dummy.matrix);
+
+        dummy.position.set(lx, baseH + 0.79, lz);
+        dummy.updateMatrix();
+        lampHeadInst.setMatrixAt(lpi, dummy.matrix);
+
+        lampGlowPos[lpi * 3] = lx;
+        lampGlowPos[lpi * 3 + 1] = baseH + 0.79;
+        lampGlowPos[lpi * 3 + 2] = lz;
+      }
+      lampPostInst.instanceMatrix.needsUpdate = true;
+      lampHeadInst.instanceMatrix.needsUpdate = true;
+      diorama.add(lampPostInst, lampHeadInst);
+
+      var lampGlowGeo = new THREE.BufferGeometry();
+      lampGlowGeo.setAttribute('position', new THREE.BufferAttribute(lampGlowPos, 3));
+      var lampGlowMat = new THREE.PointsMaterial({
+        size: 1.05,
+        map: glowTex,
+        color: 0xffc864,
+        transparent: true,
+        opacity: 0.0,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
+      });
+      var lampGlowPoints = new THREE.Points(lampGlowGeo, lampGlowMat);
+      lampGlowPoints.visible = false;
+      diorama.add(lampGlowPoints);
+
+      // Park & Sidewalk Benches (InstancedMesh)
+      var benchSpecs = [
+        { x: -3.4, z: -8.2, rot: Math.PI * 0.5 },
+        { x: 3.4, z: -8.2, rot: -Math.PI * 0.5 },
+        { x: -3.4, z: -11.4, rot: Math.PI * 0.5 },
+        { x: 3.4, z: -11.4, rot: -Math.PI * 0.5 },
+        { x: -2.0, z: -14.6, rot: 0 },
+        { x: 2.0, z: -14.6, rot: 0 },
+        { x: -6.2, z: 1.32, rot: 0 },
+        { x: 6.2, z: 1.32, rot: 0 },
+        { x: -6.8, z: 7.65, rot: 0 },
+        { x: 6.8, z: 10.75, rot: Math.PI }
+      ];
+      var benchSeatInst = new THREE.InstancedMesh(new THREE.BoxGeometry(0.46, 0.04, 0.17), chairMat, benchSpecs.length);
+      var benchBackInst = new THREE.InstancedMesh(new THREE.BoxGeometry(0.46, 0.14, 0.03), chairMat, benchSpecs.length);
+      benchSeatInst.castShadow = true;
+      for (var bsi = 0; bsi < benchSpecs.length; bsi++) {
+        var bs = benchSpecs[bsi];
+        var by = (bs.z > 0.95) ? 0.08 : 0.02;
+        dummy.position.set(bs.x, by + 0.12, bs.z);
+        dummy.rotation.set(0, bs.rot, 0);
+        dummy.scale.set(1, 1, 1);
+        dummy.updateMatrix();
+        benchSeatInst.setMatrixAt(bsi, dummy.matrix);
+
+        dummy.position.set(
+          bs.x - Math.sin(bs.rot) * 0.07,
+          by + 0.21,
+          bs.z - Math.cos(bs.rot) * 0.07
+        );
+        dummy.updateMatrix();
+        benchBackInst.setMatrixAt(bsi, dummy.matrix);
+      }
+      benchSeatInst.instanceMatrix.needsUpdate = true;
+      benchBackInst.instanceMatrix.needsUpdate = true;
+      diorama.add(benchSeatInst, benchBackInst);
+
+      // Parisian Bus Stop Totems & Shelters
+      var busStopMat = new THREE.MeshStandardMaterial({ color: 0x1e4d3a, roughness: 0.45, metalness: 0.3 });
+      var busSignMat = new THREE.MeshStandardMaterial({ color: 0xf4d35e, roughness: 0.35 });
+      [
+        { x: -7.8, z: 10.65, rot: 0 },
+        { x: 7.8, z: 7.75, rot: Math.PI },
+        { x: 1.55, z: 14.2, rot: Math.PI * 0.5 }
+      ].forEach(function (st) {
+        var grp = new THREE.Group();
+        grp.position.set(st.x, 0.08, st.z);
+        grp.rotation.y = st.rot;
+        var pole = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.022, 0.55, 6), busStopMat);
+        pole.position.y = 0.275;
+        var sign = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.22, 0.03), busSignMat);
+        sign.position.y = 0.46;
+        var roofSh = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.03, 0.28), busStopMat);
+        roofSh.position.set(0.32, 0.48, 0);
+        roofSh.castShadow = true;
+        var leg1 = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.48, 0.03), busStopMat);
+        leg1.position.set(0.58, 0.24, -0.09);
+        grp.add(pole, sign, roofSh, leg1);
+        diorama.add(grp);
+      });
+
+      // -----------------------------------------------------------------------
+      // 7. Animated Pedestrians (54 Figures via 4 InstancedMeshes)
+      // -----------------------------------------------------------------------
+      var PED_COUNT = 54;
+      var pedBodyGeo = new THREE.CylinderGeometry(0.066, 0.085, 0.25, 8);
+      var pedHeadGeo = new THREE.SphereGeometry(0.068, 8, 6);
+      var pedBodyMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.72 });
+      var pedSkinMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.65 });
+      var pedHatMat = new THREE.MeshStandardMaterial({ color: 0x262932, roughness: 0.7 });
+
+      var pedBodyInst = new THREE.InstancedMesh(pedBodyGeo, pedBodyMat, PED_COUNT);
+      var pedHeadInst = new THREE.InstancedMesh(pedHeadGeo, pedSkinMat, PED_COUNT);
+      pedBodyInst.castShadow = true;
+      pedHeadInst.castShadow = true;
+
+      var coatPalette = [
+        0xc84b31, 0x2b4560, 0xd4a373, 0x3b5944, 0x6b4b6e,
+        0xe0c8a8, 0x8f3434, 0x45505e, 0xc7892b, 0xdce2e8
+      ];
+      var skinPalette = [0xf5d0b5, 0xe8b896, 0xd19a72, 0x8d583b, 0xf7dcc8];
+
+      // Define pedestrian routes (sidewalks, bridge, cross blvd, plaza)
+      var pedRoutes = [
+        // Main Ave West & East sidewalks (walking all the way over the bridge!)
+        { pts: [[-1.50, 17.2], [-1.50, -5.8]], speed: 0.85 },
+        { pts: [[1.50, -5.8], [1.50, 17.2]], speed: 0.92 },
+        { pts: [[-1.55, 14.5], [-1.55, 1.5]], speed: 0.75 },
+        { pts: [[1.55, 1.5], [1.55, 14.5]], speed: 0.80 },
+        // Cross Boulevard sidewalks (North & South sides)
+        { pts: [[-12.6, 7.65], [12.6, 7.65]], speed: 0.95 },
+        { pts: [[12.6, 10.75], [-12.6, 10.75]], speed: 0.88 },
+        { pts: [[-9.8, 7.55], [-2.0, 7.55]], speed: 0.68 },
+        { pts: [[2.0, 10.85], [9.8, 10.85]], speed: 0.72 },
+        // Quay promenade overlooking Seine
+        { pts: [[-12.6, 1.32], [-2.0, 1.32]], speed: 0.66 },
+        { pts: [[2.0, 1.32], [12.6, 1.32]], speed: 0.70 },
+        // Front street sidewalk
+        { pts: [[-11.5, 17.4], [11.5, 17.4]], speed: 0.82 },
+        // Around block loops (NW, NE, SW, SE)
+        { pts: [[-10.4, 4.1], [-2.0, 4.1], [-2.0, 7.45], [-10.4, 7.45]], loop: true, speed: 0.76 },
+        { pts: [[2.0, 4.1], [10.4, 4.1], [10.4, 7.45], [2.0, 7.45]], loop: true, speed: 0.78 },
+        { pts: [[-10.4, 11.0], [-2.0, 11.0], [-2.0, 14.5], [-10.4, 14.5]], loop: true, speed: 0.74 },
+        { pts: [[2.0, 11.0], [10.4, 11.0], [10.4, 14.5], [2.0, 14.5]], loop: true, speed: 0.84 },
+        // Tower Plaza stroll loops
+        { pts: [[-3.3, -6.0], [3.3, -6.0], [3.3, -13.6], [-3.3, -13.6]], loop: true, speed: 0.65 },
+        { pts: [[-1.2, -6.6], [1.2, -6.6], [1.2, -13.0], [-1.2, -13.0]], loop: true, speed: 0.60 }
+      ];
+
+      function buildPolylineMetrics(pts, isLoop) {
+        var segs = [];
+        var total = 0;
+        var count = isLoop ? pts.length : pts.length - 1;
+        for (var i = 0; i < count; i++) {
+          var a = pts[i];
+          var b = pts[(i + 1) % pts.length];
+          var dx = b[0] - a[0], dz = b[1] - a[1];
+          var len = Math.hypot(dx, dz);
+          segs.push({ ax: a[0], az: a[1], bx: b[0], bz: b[1], len: len, start: total });
+          total += len;
+        }
+        return { segs: segs, total: total, isLoop: !!isLoop };
+      }
+
+      function samplePedRoute(metric, dist) {
+        var d;
+        if (metric.isLoop) {
+          d = ((dist % metric.total) + metric.total) % metric.total;
+        } else {
+          var cycle = metric.total * 2;
+          var m = ((dist % cycle) + cycle) % cycle;
+          d = (m <= metric.total) ? m : (cycle - m);
+        }
+        for (var i = 0; i < metric.segs.length; i++) {
+          var s = metric.segs[i];
+          if (d <= s.start + s.len || i === metric.segs.length - 1) {
+            var t = s.len > 0 ? (d - s.start) / s.len : 0;
+            var x = s.ax + (s.bx - s.ax) * t;
+            var z = s.az + (s.bz - s.az) * t;
+            var yaw = Math.atan2(s.bx - s.ax, s.bz - s.az);
+            if (!metric.isLoop && (((dist % (metric.total * 2)) + metric.total * 2) % (metric.total * 2)) > metric.total) {
+              yaw += Math.PI;
+            }
+            return { x: x, z: z, yaw: yaw };
+          }
+        }
+        return { x: 0, z: 0, yaw: 0 };
+      }
+
+      var pedRouteMetrics = pedRoutes.map(function (r) {
+        return { metric: buildPolylineMetrics(r.pts, r.loop), speed: r.speed };
+      });
+
+      var peds = [];
+      var hatIndices = [];
+      var photoIndices = [];
+
+      // 44 walking pedestrians
+      for (var pi = 0; pi < 44; pi++) {
+        var rIdx = pi % pedRouteMetrics.length;
+        var rm = pedRouteMetrics[rIdx];
+        var initOffset = ((pi * 3.17) % 1) * rm.metric.total * (rm.metric.isLoop ? 1 : 2);
+        var spd = rm.speed * (1.15 + ((pi * 17) % 7) * 0.07);
+        peds.push({
+          walking: true,
+          route: rm.metric,
+          dist: initOffset,
+          speed: spd,
+          phase: pi * 1.13,
+          x: 0, y: 0, z: 0, yaw: 0
+        });
+        tmpColor.setHex(coatPalette[pi % coatPalette.length]);
+        pedBodyInst.setColorAt(pi, tmpColor);
+        tmpColor.setHex(skinPalette[pi % skinPalette.length]);
+        pedHeadInst.setColorAt(pi, tmpColor);
+        if (pi % 3 === 0) hatIndices.push(pi);
+      }
+
+      // 10 stationary tourists & cafe patrons (some taking photos of the Eiffel Tower!)
+      var staticSpots = [
+        { x: -0.65, z: -5.4, yaw: Math.PI, photo: true },
+        { x: -0.35, z: -5.55, yaw: Math.PI - 0.25, photo: false },
+        { x: 0.72, z: -5.25, yaw: Math.PI + 0.15, photo: true },
+        { x: -1.48, z: -0.75, yaw: -Math.PI * 0.8, photo: true },
+        { x: 1.48, z: -1.05, yaw: Math.PI * 0.78, photo: true },
+        { x: -2.1, z: -13.8, yaw: 0.2, photo: true },
+        { x: -1.8, z: -13.9, yaw: -0.1, photo: false },
+        // Cafe terrace patrons
+        { x: -3.3, z: 10.92, yaw: 0, photo: false },
+        { x: 3.3, z: 10.92, yaw: 0, photo: false },
+        { x: 2.5, z: 7.58, yaw: Math.PI, photo: false }
+      ];
+      for (var si3 = 0; si3 < staticSpots.length; si3++) {
+        var idx = 44 + si3;
+        var sp = staticSpots[si3];
+        peds.push({
+          walking: false,
+          x: sp.x, y: 0, z: sp.z, yaw: sp.yaw,
+          phase: idx * 0.9,
+          photo: sp.photo
+        });
+        tmpColor.setHex(coatPalette[(idx + 3) % coatPalette.length]);
+        pedBodyInst.setColorAt(idx, tmpColor);
+        tmpColor.setHex(skinPalette[idx % skinPalette.length]);
+        pedHeadInst.setColorAt(idx, tmpColor);
+        if (sp.photo) photoIndices.push(idx);
+        if (si3 % 4 === 0) hatIndices.push(idx);
+      }
+
+      pedBodyInst.instanceColor.needsUpdate = true;
+      pedHeadInst.instanceColor.needsUpdate = true;
+      diorama.add(pedBodyInst, pedHeadInst);
+
+      var pedHatInst = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.082, 0.088, 0.025, 8), pedHatMat, hatIndices.length);
+      var pedArmInst = new THREE.InstancedMesh(new THREE.BoxGeometry(0.028, 0.11, 0.028), pedHatMat, photoIndices.length);
+      diorama.add(pedHatInst, pedArmInst);
+
+      function groundYAt(x, z) {
+        if (z >= -3.0 && z <= 1.2 && Math.abs(x) < 1.85) return bridgeHeightAt(z) + 0.06;
+        if (z > 0.95) return 0.08;
+        return 0.02;
+      }
+
+      function updatePedestrians(dt, elapsed) {
+        for (var i = 0; i < PED_COUNT; i++) {
+          var p = peds[i];
+          var bob = 0;
+          var roll = 0;
+          if (p.walking) {
+            p.dist += p.speed * dt;
+            var s = samplePedRoute(p.route, p.dist);
+            p.x = s.x;
+            p.z = s.z;
+            p.yaw = s.yaw;
+            var stride = elapsed * p.speed * 10.5 + p.phase;
+            bob = Math.abs(Math.sin(stride)) * 0.032;
+            roll = Math.sin(stride) * 0.055;
+          } else {
+            bob = Math.sin(elapsed * 2.0 + p.phase) * 0.006;
+          }
+          p.y = groundYAt(p.x, p.z) + bob;
+
+          dummy.position.set(p.x, p.y + 0.125, p.z);
+          dummy.rotation.set(0, p.yaw, roll);
+          dummy.scale.set(1, 1, 1);
+          dummy.updateMatrix();
+          pedBodyInst.setMatrixAt(i, dummy.matrix);
+
+          dummy.position.set(p.x, p.y + 0.315, p.z);
+          dummy.rotation.set(0, p.yaw, 0);
+          dummy.updateMatrix();
+          pedHeadInst.setMatrixAt(i, dummy.matrix);
+        }
+
+        for (var hi = 0; hi < hatIndices.length; hi++) {
+          var hp = peds[hatIndices[hi]];
+          dummy.position.set(hp.x, hp.y + 0.375, hp.z);
+          dummy.rotation.set(0, hp.yaw, 0);
+          dummy.scale.set(1.15, 1.15, 1.15);
+          dummy.updateMatrix();
+          pedHatInst.setMatrixAt(hi, dummy.matrix);
+        }
+
+        for (var ai = 0; ai < photoIndices.length; ai++) {
+          var ap = peds[photoIndices[ai]];
+          dummy.position.set(
+            ap.x + Math.sin(ap.yaw) * 0.09 + Math.cos(ap.yaw) * 0.06,
+            ap.y + 0.285,
+            ap.z + Math.cos(ap.yaw) * 0.09 - Math.sin(ap.yaw) * 0.06
+          );
+          dummy.rotation.set(-0.95, ap.yaw, 0);
+          dummy.scale.set(1, 1, 1);
+          dummy.updateMatrix();
+          pedArmInst.setMatrixAt(ai, dummy.matrix);
+        }
+
+        pedBodyInst.instanceMatrix.needsUpdate = true;
+        pedHeadInst.instanceMatrix.needsUpdate = true;
+        pedHatInst.instanceMatrix.needsUpdate = true;
+        pedArmInst.instanceMatrix.needsUpdate = true;
+      }
+
+      // -----------------------------------------------------------------------
+      // 8. Moving Vehicles (7 Cars + 1 Red Double-Decker Bus) with Night Lights
+      // -----------------------------------------------------------------------
+      var wheelGeo = new THREE.CylinderGeometry(0.092, 0.092, 0.06, 10);
+      wheelGeo.rotateZ(Math.PI / 2);
+      var wheelMat = new THREE.MeshStandardMaterial({ color: 0x1b1d22, roughness: 0.75 });
+      var glassMat = new THREE.MeshStandardMaterial({ color: 0x25303d, roughness: 0.2, metalness: 0.4 });
+      var chassisGeo = new THREE.BoxGeometry(0.46, 0.17, 0.96);
+      var cabinGeo = new THREE.BoxGeometry(0.40, 0.15, 0.50);
+      var windowBandGeo = new THREE.BoxGeometry(0.415, 0.095, 0.52);
+      var headlightGeo = new THREE.BoxGeometry(0.08, 0.055, 0.03);
+      var headlightMat = new THREE.MeshStandardMaterial({
+        color: 0xfff3c4,
+        roughness: 0.2,
+        emissive: new THREE.Color(0xffe082),
+        emissiveIntensity: 0.1
+      });
+      var taillightMat = new THREE.MeshStandardMaterial({
+        color: 0xb52424,
+        roughness: 0.3,
+        emissive: new THREE.Color(0xff2a2a),
+        emissiveIntensity: 0.1
+      });
+
+      var vehicleHalos = [];
+      function addVehicleHeadlightHalo(parent, x, y, z) {
+        var spMat = new THREE.SpriteMaterial({
+          map: glowTex,
+          color: 0xffe8a6,
+          transparent: true,
+          opacity: 0.0,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+        });
+        var sp = new THREE.Sprite(spMat);
+        sp.position.set(x, y, z);
+        sp.scale.set(0.48, 0.48, 1);
+        sp.visible = false;
+        parent.add(sp);
+        vehicleHalos.push(sp);
+      }
+
+      function createCar(bodyColor) {
+        var car = new THREE.Group();
+        var bodyMat = new THREE.MeshStandardMaterial({ color: bodyColor, roughness: 0.38, metalness: 0.25 });
+        var chassis = new THREE.Mesh(chassisGeo, bodyMat);
+        chassis.position.y = 0.155;
+        chassis.castShadow = true;
+        chassis.receiveShadow = true;
+        car.add(chassis);
+
+        var cabin = new THREE.Mesh(cabinGeo, bodyMat);
+        cabin.position.set(0, 0.305, -0.04);
+        cabin.castShadow = true;
+        car.add(cabin);
+
+        var winBand = new THREE.Mesh(windowBandGeo, glassMat);
+        winBand.position.set(0, 0.30, -0.04);
+        car.add(winBand);
+
+        [
+          [-0.23, 0.092, 0.29], [0.23, 0.092, 0.29],
+          [-0.23, 0.092, -0.29], [0.23, 0.092, -0.29]
+        ].forEach(function (wp) {
+          var w = new THREE.Mesh(wheelGeo, wheelMat);
+          w.position.set(wp[0], wp[1], wp[2]);
+          w.castShadow = true;
+          car.add(w);
+        });
+
+        [-0.14, 0.14].forEach(function (hx) {
+          var hl = new THREE.Mesh(headlightGeo, headlightMat);
+          hl.position.set(hx, 0.16, 0.485);
+          car.add(hl);
+          addVehicleHeadlightHalo(car, hx, 0.16, 0.53);
+
+          var tl = new THREE.Mesh(headlightGeo, taillightMat);
+          tl.position.set(hx, 0.16, -0.485);
+          car.add(tl);
+        });
+
+        return car;
+      }
+
+      function createDoubleDeckerBus() {
+        var bus = new THREE.Group();
+        var busMat = new THREE.MeshStandardMaterial({ color: 0xc92a2a, roughness: 0.36, metalness: 0.2 });
+        var lower = new THREE.Mesh(new THREE.BoxGeometry(0.54, 0.32, 1.56), busMat);
+        lower.position.y = 0.25;
+        lower.castShadow = true;
+        bus.add(lower);
+
+        var lowerWin = new THREE.Mesh(new THREE.BoxGeometry(0.555, 0.13, 1.38), glassMat);
+        lowerWin.position.set(0, 0.29, 0.04);
+        bus.add(lowerWin);
+
+        var upper = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.28, 1.50), busMat);
+        upper.position.y = 0.54;
+        upper.castShadow = true;
+        bus.add(upper);
+
+        var upperWin = new THREE.Mesh(new THREE.BoxGeometry(0.535, 0.13, 1.32), glassMat);
+        upperWin.position.set(0, 0.56, 0.04);
+        bus.add(upperWin);
+
+        [
+          [-0.27, 0.095, 0.48], [0.27, 0.095, 0.48],
+          [-0.27, 0.095, -0.48], [0.27, 0.095, -0.48]
+        ].forEach(function (wp) {
+          var w = new THREE.Mesh(wheelGeo, wheelMat);
+          w.position.set(wp[0], wp[1], wp[2]);
+          w.scale.setScalar(1.1);
+          bus.add(w);
+        });
+
+        [-0.17, 0.17].forEach(function (hx) {
+          var hl = new THREE.Mesh(headlightGeo, headlightMat);
+          hl.position.set(hx, 0.18, 0.785);
+          bus.add(hl);
+          addVehicleHeadlightHalo(bus, hx, 0.18, 0.83);
+
+          var tl = new THREE.Mesh(headlightGeo, taillightMat);
+          tl.position.set(hx, 0.18, -0.785);
+          bus.add(tl);
+        });
+
+        return bus;
+      }
+
+      // Smooth rounded corner builder for closed road loops
+      function buildRoundedLoop(cornersPts, cornerRadius, arcSteps) {
+        var out = [];
+        var n = cornersPts.length;
+        for (var i = 0; i < n; i++) {
+          var pPrev = cornersPts[(i - 1 + n) % n];
+          var pCurr = cornersPts[i];
+          var pNext = cornersPts[(i + 1) % n];
+
+          var v1x = pCurr[0] - pPrev[0], v1z = pCurr[1] - pPrev[1];
+          var l1 = Math.hypot(v1x, v1z);
+          v1x /= l1; v1z /= l1;
+
+          var v2x = pNext[0] - pCurr[0], v2z = pNext[1] - pCurr[1];
+          var l2 = Math.hypot(v2x, v2z);
+          v2x /= l2; v2z /= l2;
+
+          var r = Math.min(cornerRadius, l1 * 0.35, l2 * 0.35);
+          var enterX = pCurr[0] - v1x * r, enterZ = pCurr[1] - v1z * r;
+          var exitX = pCurr[0] + v2x * r, exitZ = pCurr[1] + v2z * r;
+
+          for (var s = 0; s <= arcSteps; s++) {
+            var t = s / arcSteps;
+            var omt = 1 - t;
+            // Quadratic Bezier through pCurr for smooth turning
+            var x = omt * omt * enterX + 2 * omt * t * pCurr[0] + t * t * exitX;
+            var z = omt * omt * enterZ + 2 * omt * t * pCurr[1] + t * t * exitZ;
+            out.push([x, z]);
+          }
+        }
+        return buildPolylineMetrics(out, true);
+      }
+
+      // Loop 1 (Scenic Bridge + East Quarter Loop - right-hand traffic)
+      var loopBridgeEast = buildRoundedLoop([
+        [0.62, 16.45],
+        [0.62, -3.4],
+        [1.55, -4.5],
+        [0.62, -5.6],
+        [-0.62, -5.6],
+        [-1.55, -4.5],
+        [-0.62, -3.4],
+        [-0.62, 8.65],
+        [11.45, 8.65],
+        [11.45, 16.45]
+      ], 0.85, 5);
+
+      // Loop 2 (West Quarter Loop)
+      var loopWest = buildRoundedLoop([
+        [-0.62, 2.08],
+        [-12.35, 2.08],
+        [-12.35, 9.75],
+        [-0.62, 9.75]
+      ], 0.9, 5);
+
+      // Loop 3 (Grand Outer Boulevard Loop)
+      var loopOuter = buildRoundedLoop([
+        [-11.45, 3.12],
+        [12.35, 3.12],
+        [12.35, 15.65],
+        [-11.45, 15.65]
+      ], 0.9, 5);
+
+      // Loop 4 (Lower Cross & Front Loop)
+      var loopSouth = buildRoundedLoop([
+        [0.62, 15.65],
+        [0.62, 9.75],
+        [-11.45, 9.75],
+        [-11.45, 15.65]
+      ], 0.9, 5);
+
+      function sampleVehiclePose(metric, dist) {
+        var s1 = samplePedRoute(metric, dist - 0.14);
+        var s2 = samplePedRoute(metric, dist + 0.14);
+        var sC = samplePedRoute(metric, dist);
+        var y1 = (s1.z >= -3.0 && s1.z <= 1.2 && Math.abs(s1.x) < 1.25) ? bridgeHeightAt(s1.z) + 0.015 : 0.03;
+        var y2 = (s2.z >= -3.0 && s2.z <= 1.2 && Math.abs(s2.x) < 1.25) ? bridgeHeightAt(s2.z) + 0.015 : 0.03;
+        var yC = (sC.z >= -3.0 && sC.z <= 1.2 && Math.abs(sC.x) < 1.25) ? bridgeHeightAt(sC.z) + 0.015 : 0.03;
+        var dx = s2.x - s1.x, dy = y2 - y1, dz = s2.z - s1.z;
+        var horiz = Math.hypot(dx, dz) || 1;
+        return {
+          x: sC.x,
+          y: yC,
+          z: sC.z,
+          yaw: Math.atan2(dx, dz),
+          pitch: -Math.atan2(dy, horiz)
+        };
+      }
+
+      var vehicleConfigs = [
+        { type: 'car', color: 0xc8372d, route: loopBridgeEast, dist: 4.0, speed: 2.25 },
+        { type: 'car', color: 0x2a528a, route: loopBridgeEast, dist: 24.0, speed: 2.15 },
+        { type: 'bus', color: 0xc92a2a, route: loopBridgeEast, dist: 46.0, speed: 1.45 },
+        { type: 'car', color: 0xf0ebe0, route: loopWest, dist: 3.0, speed: 2.10 },
+        { type: 'car', color: 0x262930, route: loopWest, dist: 19.0, speed: 2.30 },
+        { type: 'car', color: 0xe2b029, route: loopOuter, dist: 8.0, speed: 2.20 },
+        { type: 'car', color: 0x3b6e52, route: loopOuter, dist: 42.0, speed: 2.05 },
+        { type: 'car', color: 0x7a2736, route: loopSouth, dist: 11.0, speed: 1.95 }
+      ];
+
+      var vehicles = vehicleConfigs.map(function (vc) {
+        var mesh = vc.type === 'bus' ? createDoubleDeckerBus() : createCar(vc.color);
+        diorama.add(mesh);
+        return { mesh: mesh, route: vc.route, dist: vc.dist, speed: vc.speed, type: vc.type };
+      });
+
+      function updateVehicles(dt) {
+        for (var i = 0; i < vehicles.length; i++) {
+          var v = vehicles[i];
+          v.dist += v.speed * dt;
+          var pose = sampleVehiclePose(v.route, v.dist);
+          v.mesh.position.set(pose.x, pose.y, pose.z);
+          v.mesh.rotation.order = 'YXZ';
+          v.mesh.rotation.y = pose.yaw;
+          v.mesh.rotation.x = pose.pitch;
+        }
+      }
+
+      // Initialize dynamic positions before first frame
+      updatePedestrians(0, 0);
+      updateVehicles(0);
+
+      // -----------------------------------------------------------------------
+      // 9. Atmosphere: Floating Golden Dust & Night Stars
+      // -----------------------------------------------------------------------
+      var dustCount = 110;
       var dustPos = new Float32Array(dustCount * 3);
       var dustPhase = new Float32Array(dustCount);
       for (var di = 0; di < dustCount; di++) {
-        var angle = Math.random() * Math.PI * 2;
-        var rad = 1.2 + Math.random() * 9.0;
-        dustPos[di * 3] = Math.cos(angle) * rad;
-        dustPos[di * 3 + 1] = 0.6 + Math.random() * 14.5;
-        dustPos[di * 3 + 2] = Math.sin(angle) * rad;
+        dustPos[di * 3] = (Math.random() - 0.5) * 26.0;
+        dustPos[di * 3 + 1] = 0.6 + Math.random() * 15.0;
+        dustPos[di * 3 + 2] = (Math.random() - 0.5) * 34.0;
         dustPhase[di] = Math.random() * Math.PI * 2;
       }
       var dustGeo = new THREE.BufferGeometry();
       dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
       var dustMat = new THREE.PointsMaterial({
-        size: 0.26,
+        size: 0.28,
         map: glowTex,
         transparent: true,
-        opacity: 0.38,
+        opacity: 0.36,
         blending: THREE.AdditiveBlending,
         depthWrite: false
       });
       var dustPoints = new THREE.Points(dustGeo, dustMat);
       diorama.add(dustPoints);
 
-      // Night Stars
       var starCount = 360;
       var starPos = new Float32Array(starCount * 3);
       for (var si = 0; si < starCount; si++) {
         var theta = Math.random() * Math.PI * 2;
         var phi = Math.acos(0.15 + Math.random() * 0.85);
-        var sr = 85 + Math.random() * 20;
+        var sr = 95 + Math.random() * 20;
         starPos[si * 3] = sr * Math.sin(phi) * Math.cos(theta);
         starPos[si * 3 + 1] = sr * Math.cos(phi);
         starPos[si * 3 + 2] = sr * Math.sin(phi) * Math.sin(theta);
@@ -1102,7 +2103,7 @@
       var starGeo = new THREE.BufferGeometry();
       starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
       var starMat = new THREE.PointsMaterial({
-        size: 0.9,
+        size: 0.95,
         map: glowTex,
         color: 0xfff4dc,
         transparent: true,
@@ -1114,12 +2115,12 @@
       scene.add(starPoints);
 
       // -----------------------------------------------------------------------
-      // 7. Custom Lightweight Orbit Controls (Drag, Wheel, Pinch, Inertia)
+      // 10. Custom Lightweight Orbit Controls (Drag, Wheel, Pinch, Inertia)
       // -----------------------------------------------------------------------
-      var target = new THREE.Vector3(0, 7.4, 0);
-      var baseRadius = (window.innerWidth < window.innerHeight) ? 35.5 : 29.5;
-      var spherical = { theta: 0.55, phi: 1.15, radius: baseRadius };
-      var sphericalTarget = { theta: 0.55, phi: 1.15, radius: baseRadius };
+      var target = new THREE.Vector3(0, 5.1, -0.4);
+      var baseRadius = (window.innerWidth < window.innerHeight) ? 62.0 : 47.5;
+      var spherical = { theta: 0.46, phi: 1.02, radius: baseRadius };
+      var sphericalTarget = { theta: 0.46, phi: 1.02, radius: baseRadius };
       var autoRotate = true;
       var isDragging = false;
       var pointerDownPos = { x: 0, y: 0 };
@@ -1178,7 +2179,7 @@
           var dist = Math.hypot(pA.x - pB.x, pA.y - pB.y);
           if (lastPinchDist > 0) {
             var delta = lastPinchDist - dist;
-            sphericalTarget.radius = Math.max(12, Math.min(38, sphericalTarget.radius + delta * 0.055));
+            sphericalTarget.radius = Math.max(18, Math.min(68, sphericalTarget.radius + delta * 0.065));
           }
           lastPinchDist = dist;
         }
@@ -1213,7 +2214,7 @@
 
       dom.addEventListener('wheel', function (e) {
         e.preventDefault();
-        sphericalTarget.radius = Math.max(12, Math.min(38, sphericalTarget.radius + e.deltaY * 0.015));
+        sphericalTarget.radius = Math.max(18, Math.min(68, sphericalTarget.radius + e.deltaY * 0.02));
       }, { passive: false });
 
       dom.addEventListener('dblclick', function () {
@@ -1221,7 +2222,7 @@
       });
 
       // -----------------------------------------------------------------------
-      // 8. Day / Night & Auto-Rotate State
+      // 11. Day / Night & Auto-Rotate State
       // -----------------------------------------------------------------------
       var isNight = false;
       var nightFactor = 0.0;
@@ -1252,7 +2253,7 @@
       });
 
       // -----------------------------------------------------------------------
-      // 9. Resize Handling
+      // 12. Resize Handling
       // -----------------------------------------------------------------------
       window.addEventListener('resize', function () {
         camera.aspect = window.innerWidth / window.innerHeight;
@@ -1262,7 +2263,7 @@
       });
 
       // -----------------------------------------------------------------------
-      // 10. Animation Loop
+      // 13. Animation Loop
       // -----------------------------------------------------------------------
       var clock = new THREE.Clock();
 
@@ -1277,16 +2278,18 @@
 
         skyUniforms.uNight.value = nightFactor;
         fog.color.lerpColors(fogDayColor, fogNightColor, nightFactor);
+        riverMat.color.lerpColors(riverDayColor, riverNightColor, nightFactor);
+        riverMat.emissiveIntensity = 0.42 * (1 - nightFactor) + 0.22 * nightFactor;
 
         hemiLight.color.lerpColors(hemiDaySky, hemiNightSky, nightFactor);
         hemiLight.groundColor.lerpColors(hemiDayGnd, hemiNightGnd, nightFactor);
-        hemiLight.intensity = 0.85 * (1 - nightFactor) + 0.42 * nightFactor;
+        hemiLight.intensity = 0.88 * (1 - nightFactor) + 0.28 * nightFactor;
 
         dirLight.color.lerpColors(sunDayColor, sunNightColor, nightFactor);
-        dirLight.intensity = 1.85 * (1 - nightFactor) + 0.45 * nightFactor;
-        rimLight.intensity = 0.55 * (1 - nightFactor) + 0.22 * nightFactor;
+        dirLight.intensity = 1.85 * (1 - nightFactor) + 0.30 * nightFactor;
+        rimLight.intensity = 0.55 * (1 - nightFactor) + 0.18 * nightFactor;
 
-        // Nighttime tower & prop glow
+        // Nighttime tower, lamp, window, cafe & vehicle glow
         var twinkle = 0.92 + 0.08 * Math.sin(elapsed * 4.5);
         var nightVisible = nightFactor > 0.01;
         bulbInstanced.visible = nightVisible;
@@ -1294,6 +2297,7 @@
         beaconOrb.visible = nightVisible;
         beaconSprite.visible = nightVisible;
         searchlightPivot.visible = nightVisible;
+        lampGlowPoints.visible = nightVisible;
 
         bulbMat.opacity = nightFactor * twinkle;
         bulbGlowMat.opacity = nightFactor * 0.58 * twinkle;
@@ -1301,25 +2305,43 @@
         beaconSpriteMat.opacity = nightFactor * 0.85;
         beamUniforms.uOpacity.value = nightFactor * 0.22;
         galleryMat.emissiveIntensity = nightFactor * 1.8;
-        lampBulbMat.emissiveIntensity = 0.05 + nightFactor * 2.2;
-        windowLitMat.emissiveIntensity = nightFactor * 3.8;
+        lampBulbMat.emissiveIntensity = 0.08 + nightFactor * 2.8;
+        lampGlowMat.opacity = nightFactor * 0.82;
+        windowLitMat.emissiveIntensity = nightFactor * 4.4;
+        cafeWinMat.emissiveIntensity = nightFactor * 3.8;
+        boatCabinMat.emissiveIntensity = nightFactor * 2.6;
+        headlightMat.emissiveIntensity = 0.1 + nightFactor * 3.6;
+        taillightMat.emissiveIntensity = 0.1 + nightFactor * 2.4;
+
+        for (var vi = 0; vi < vehicleHalos.length; vi++) {
+          vehicleHalos[vi].visible = nightVisible;
+          vehicleHalos[vi].material.opacity = nightFactor * 0.78;
+        }
 
         towerGlowLow.intensity = nightFactor * 3.8;
         towerGlowMid.intensity = nightFactor * 3.0;
         towerGlowHigh.intensity = nightFactor * 2.2;
         towerGlowSummit.intensity = nightFactor * 1.8;
+        streetGlowCross.intensity = nightFactor * 1.65;
+        streetGlowQuay.intensity = nightFactor * 1.35;
 
         starMat.opacity = Math.max(0, (nightFactor - 0.25) / 0.75) * 0.85;
-        dustMat.opacity = 0.32 + nightFactor * 0.46;
+        dustMat.opacity = 0.30 + nightFactor * 0.45;
 
         // Rotate searchlight beams
         searchlightPivot.rotation.y += dt * 0.75;
+
+        // Animate pedestrians, vehicles, and Seine tour boat
+        updatePedestrians(dt, elapsed);
+        updateVehicles(dt);
+        boatGroup.position.x = Math.sin(elapsed * 0.09) * 10.5;
+        boatGroup.rotation.y = Math.cos(elapsed * 0.09) >= 0 ? 0 : Math.PI;
 
         // Gentle floating dust motion
         var posAttr = dustGeo.attributes.position;
         for (var i = 0; i < dustCount; i++) {
           var py = posAttr.getY(i) + dt * 0.14;
-          if (py > 15.2) py = 0.6;
+          if (py > 15.6) py = 0.6;
           posAttr.setY(i, py);
           posAttr.setX(i, posAttr.getX(i) + Math.sin(elapsed * 0.7 + dustPhase[i]) * dt * 0.05);
         }
@@ -1327,7 +2349,7 @@
 
         // Auto-rotate & camera damping
         if (autoRotate && !isDragging && Object.keys(activePointers).length === 0) {
-          sphericalTarget.theta += dt * 0.16;
+          sphericalTarget.theta += dt * 0.14;
         }
         var damp = Math.min(1, dt * 8.5);
         spherical.theta += (sphericalTarget.theta - spherical.theta) * damp;
@@ -1338,7 +2360,7 @@
         renderer.render(scene, camera);
       }
 
-      // Expose minimal debug hooks for headless verification (no external side effects)
+      // Expose minimal debug hooks for headless verification
       window.__eiffelDebug = {
         getState: function () {
           return {
@@ -1347,7 +2369,26 @@
             autoRotate: autoRotate,
             theta: spherical.theta,
             phi: spherical.phi,
-            radius: spherical.radius
+            radius: spherical.radius,
+            drawCalls: renderer.info.render.calls,
+            triangles: renderer.info.render.triangles
+          };
+        },
+        getMotionSample: function () {
+          return {
+            peds: [0, 5, 12, 22, 35].map(function (idx) {
+              return { id: idx, x: +peds[idx].x.toFixed(3), y: +peds[idx].y.toFixed(3), z: +peds[idx].z.toFixed(3) };
+            }),
+            vehicles: vehicles.map(function (v, idx) {
+              return {
+                id: idx,
+                type: v.type,
+                x: +v.mesh.position.x.toFixed(3),
+                y: +v.mesh.position.y.toFixed(3),
+                z: +v.mesh.position.z.toFixed(3)
+              };
+            }),
+            boatX: +boatGroup.position.x.toFixed(3)
           };
         }
       };
